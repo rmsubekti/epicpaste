@@ -2,7 +2,7 @@ package model
 
 type Category struct {
 	ID   uint
-	Name string
+	Name string `gorm:"type:varchar(40)"`
 }
 
 func (Category) TableName() string {

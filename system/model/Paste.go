@@ -11,7 +11,8 @@ import (
 
 const (
 	CODE string = "code"
-	NOTE string = "paste"
+	NOTE string = "note"
+	BLOG string = "blog"
 )
 
 type Paste struct {
@@ -20,11 +21,11 @@ type Paste struct {
 	Text     string    `gorm:"type:varchar(254);not null" json:"text"`
 	Public   bool      `json:"public"`
 	Type     string    `json:"type"`
-	Tag      *[]Tag    `gorm:"Many2Many:paste_tag;FOREIGNKEY:ID;ASSOCIATION_FOREIGNKEY:ID;" json:"tag,omitempty"`
+	Tag      *[]Tag    `gorm:"Many2Many:master.paste_tag;FOREIGNKEY:ID;ASSOCIATION_FOREIGNKEY:ID;" json:"tag,omitempty"`
 	Category *Category `gorm:"foreignKey:CategoryId" json:"category,omitempty"`
 	//allow nil *uint
 	CategoryId *uint       `json:"-"`
-	Detail     *CodeDetail `gorm:"foreignKey:ID" json:"detail,omitempty"`
+	CodeDetail *CodeDetail `gorm:"foreignKey:ID" json:"code_detail,omitempty"`
 	Creator    User        `gorm:"foreignKey:CreatedBy" json:"creator"`
 	CreatedBy  string      `json:"-"`
 	CreatedAt  time.Time   `time_format:"sql_date" json:"created_at"`
@@ -46,6 +47,9 @@ func (p *Paste) Create() error {
 	}
 	if len(p.Type) < 1 {
 		p.Type = NOTE
+	}
+	if p.Type != CODE {
+		p.CodeDetail = nil
 	}
 	p.ID = uuid.NewString()
 	return db.Create(&p).Error

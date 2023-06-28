@@ -2,9 +2,9 @@ package model
 
 type Language struct {
 	ID            uint
-	Name          string
+	Name          string `gorm:"type:varchar(40)"`
 	Description   string
-	FileExtension string
+	FileExtension string `gorm:"type:varchar(30)"`
 }
 
 func (Language) TableName() string {

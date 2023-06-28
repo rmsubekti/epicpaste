@@ -5,6 +5,7 @@ import (
 	"epicpaste/system/auth"
 	"epicpaste/system/model"
 	"net/http"
+	"time"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -12,7 +13,7 @@ import (
 
 var UserLogin = func(c *gin.Context) {
 	var account model.Account
-
+	const sessionDays = 1
 	if err := c.ShouldBindJSON(&account); err != nil {
 		utils.JSONErr(http.StatusBadRequest, c, err.Error())
 		return
@@ -24,7 +25,7 @@ var UserLogin = func(c *gin.Context) {
 		return
 	}
 
-	token, err := auth.CreateLoginSignature(&account.User)
+	token, err := auth.CreateLoginSignature(&account.User, sessionDays)
 	if err != nil {
 		utils.JSONErr(http.StatusInternalServerError, c, err.Error())
 		return
@@ -32,7 +33,7 @@ var UserLogin = func(c *gin.Context) {
 	session := sessions.Default(c)
 	session.Set("token", "Bearer "+token)
 	session.Save()
-	c.JSON(http.StatusOK, gin.H{"user": account.User, "token": "Bearer " + token})
+	c.JSON(http.StatusOK, gin.H{"user": account.User, "user_name": account.UserName, "expire_days": sessionDays, "signed_date": time.Now()})
 }
 
 var UserRegister = func(c *gin.Context) {

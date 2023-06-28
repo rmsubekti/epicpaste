@@ -10,12 +10,12 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-func CreateLoginSignature(u *model.User) (string, error) {
+func CreateLoginSignature(u *model.User, expireDay int) (string, error) {
 	mySigningKey := []byte(os.Getenv("JWT_SECRET_KEY"))
 
 	// Create the Claims
 	claims := &jwt.RegisteredClaims{
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(3 * time.Hour)),
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add((24 * time.Duration(expireDay)) * time.Hour)),
 		IssuedAt:  jwt.NewNumericDate(time.Now()),
 		ID:        u.ID,
 		Issuer:    u.Name,

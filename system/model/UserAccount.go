@@ -55,12 +55,12 @@ func (a *Account) Register() (err error) {
 func (a *Account) Login() error {
 	password := a.Password
 
-	if len(a.Email) < 1 && len(a.UserName) < 1 {
+	if len(a.UserName) < 1 {
 		return errors.New("email or username cannot be empty")
 	}
 
 	if result := db.Preload(clause.Associations).First(&a, "user_name = ?", a.UserName); result.RowsAffected < 1 {
-		if result := db.Preload(clause.Associations).First(&a, "email = ?", a.Email); result.RowsAffected < 1 {
+		if result := db.Preload(clause.Associations).First(&a, "email = ?", a.UserName); result.RowsAffected < 1 {
 			return errors.New("email or username not registered")
 		}
 	}
