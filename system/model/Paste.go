@@ -55,20 +55,40 @@ func (p *Paste) Create() error {
 	return db.Create(&p).Error
 }
 
-func (p *Paste) Update() error {
+func (p *Paste) Update() (err error) {
+	var paste Paste
 	if len(p.Text) < 1 {
 		return errors.New("text content must containt at least a word")
 	}
+
+	if err = db.First(&paste, "id = ?", p.ID).Error; err != nil {
+		return
+	}
+
+	if paste.CreatedBy != p.CreatedBy {
+		return errors.New("you dont have access to this paste")
+	}
+
 	p.UpdatedAt = time.Now()
 	return db.Save(&p).Error
 }
 
-func (p *Paste) Delete(id string) error {
-	return db.Delete(&p, "id = ?", id).Error
+func (p *Paste) Delete() (err error) {
+	var paste Paste
+
+	if err = db.First(&paste, "id = ?", p.ID).Error; err != nil {
+		return
+	}
+
+	if paste.CreatedBy != p.CreatedBy {
+		return errors.New("you dont have access to this paste")
+	}
+	p = &paste
+	return db.Delete(&p).Error
 }
 
 func (p *Paste) Get(id string) error {
-	return db.Preload("Detail.App").Preload("Detail.Language").Preload("Detail.OS").Preload(clause.Associations).First(&p, "id = ? and public = ?", id, true).Error
+	return db.Preload("CodeDetail.App").Preload("CodeDetail.Language").Preload("CodeDetail.OS").Preload(clause.Associations).First(&p, "id = ? ", id).Error
 }
 
 func (ps *Pastes) List(paginator *utils.Paginator) (err error) {
@@ -115,11 +135,4 @@ func (ps *Pastes) ListByUser(userId string, public bool, paginator *utils.Pagina
 
 	paginator.Rows = ps
 	return
-}
-
-func (p *Paste) OwnedBy(userId string) error {
-	if err := db.Preload(clause.Associations).First(&p, "id = ? and user_id = ?", p.ID, userId).Error; err != nil {
-		return errors.New("you dont have access to this project")
-	}
-	return nil
 }

@@ -9,6 +9,7 @@ import (
 type Paginator struct {
 	Limit      int         `form:"limit, omitempty" json:"limit"`
 	Page       int         `form:"page, omitempty" json:"page"`
+	Query      string      `form:"q, omitempty" json:"query"`
 	Sort       string      `form:"sort, omitempty" json:"sort"`
 	TotalRows  int64       `json:"total_rows"`
 	TotalPages int         `json:"total_pages"`
@@ -18,6 +19,7 @@ type Paginator struct {
 
 func (p *Paginator) Paginate(model any) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
+		// if |p.Query != nil && p.Query != ""
 		return db.Offset(p.offset).Limit(p.Limit).Order(p.Sort)
 	}
 }

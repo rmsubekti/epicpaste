@@ -14,7 +14,7 @@ var CreatePaste = func(c *gin.Context) {
 	user, _ := c.Get("user")
 
 	if user == nil { // user should login first
-		utils.JSONErr(http.StatusNotFound, c, nil)
+		utils.JSONErr(http.StatusNotFound, c, "Unauthorized")
 		return
 	}
 
@@ -47,17 +47,32 @@ var EditPaste = func(c *gin.Context) {
 	}
 
 	paste.ID = c.Param("id")
-	if err := paste.OwnedBy(user.(model.User).ID); err != nil {
-		utils.JSONErr(http.StatusNotFound, c, nil)
-		return
-	}
-
+	paste.CreatedBy = user.(model.User).ID
 	if err := paste.Update(); err != nil {
 		utils.JSONErr(http.StatusInternalServerError, c, err.Error())
 		return
 	}
 
 	c.JSON(http.StatusOK, paste)
+}
+
+var DeletePaste = func(c *gin.Context) {
+	var paste model.Paste
+	user, _ := c.Get("user")
+
+	if user == nil { // user should login first
+		utils.JSONErr(http.StatusNotFound, c, nil)
+		return
+	}
+
+	paste.ID = c.Param("id")
+	paste.CreatedBy = user.(model.User).ID
+	if err := paste.Delete(); err != nil {
+		utils.JSONErr(http.StatusInternalServerError, c, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"code": http.StatusOK, "status": "deleted", "paste": paste})
 }
 
 var ViewPaste = func(c *gin.Context) {

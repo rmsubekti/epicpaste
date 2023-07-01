@@ -33,7 +33,14 @@ var UserLogin = func(c *gin.Context) {
 	session := sessions.Default(c)
 	session.Set("token", "Bearer "+token)
 	session.Save()
-	c.JSON(http.StatusOK, gin.H{"user": account.User, "user_name": account.UserName, "expire_days": sessionDays, "signed_date": time.Now()})
+
+	user := map[string]any{
+		"id":        account.ID,
+		"user_name": account.UserName,
+		"full_name": account.User.Name,
+	}
+
+	c.JSON(http.StatusOK, gin.H{"user": user, "token": token, "expire_days": sessionDays, "signed_date": time.Now()})
 }
 
 var UserRegister = func(c *gin.Context) {
