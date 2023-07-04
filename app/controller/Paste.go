@@ -22,7 +22,7 @@ var CreatePaste = func(c *gin.Context) {
 		utils.JSONErr(http.StatusBadRequest, c, err.Error())
 		return
 	}
-	paste.Creator = user.(model.User)
+	paste.Paster = user.(model.User)
 
 	if err := paste.Create(); err != nil {
 		utils.JSONErr(http.StatusInternalServerError, c, err.Error())

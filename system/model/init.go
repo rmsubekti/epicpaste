@@ -20,11 +20,7 @@ func init() {
 		&User{},
 		&Tag{},
 		&Category{},
-		&Application{},
-		&OperatingSystem{},
-		&Language{},
 		&Paste{},
-		&CodeDetail{},
 	)
 
 	// init table function and trigger relations
