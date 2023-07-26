@@ -5,28 +5,22 @@ import (
 	"errors"
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm/clause"
 )
 
-const (
-	CODE string = "code"
-	NOTE string = "note"
-	BLOG string = "blog"
-)
-
 type Paste struct {
-	ID          string    `gorm:"primarykey:true" json:"id"`
-	Code        string    `gorm:"type:text;not null" json:"code"`
-	Description *string   `gorm:"type:varchar(255)" json:"description,omitempty"`
-	Public      bool      `json:"public"`
-	Languange   string    `json:"language"`
-	Tag         *[]Tag    `gorm:"Many2Many:master.paste_tag;FOREIGNKEY:ID;ASSOCIATION_FOREIGNKEY:ID;" json:"tag,omitempty"`
-	Category    *Category `gorm:"foreignKey:CategoryId" json:"category,omitempty"`
-	CategoryId  *uint     `json:"-"`
-	Paster      User      `gorm:"foreignKey:CreatedBy" json:"creator"`
-	CreatedBy   string    `json:"-"`
-	CreatedAt   time.Time `time_format:"sql_date" json:"created_at"`
-	UpdatedAt   time.Time `time_format:"sql_date" json:"updated_at"`
+	ID         string    `gorm:"primarykey:true" json:"id"`
+	Content    string    `gorm:"type:text;not null" json:"content"`
+	Public     bool      `json:"public"`
+	Languange  string    `json:"language"`
+	Tag        *[]Tag    `gorm:"Many2Many:master.paste_tag;FOREIGNKEY:ID;ASSOCIATION_FOREIGNKEY:ID;" json:"tag,omitempty"`
+	Category   *Category `gorm:"foreignKey:CategoryId" json:"category,omitempty"`
+	CategoryId *uint     `json:"-"`
+	Paster     User      `gorm:"foreignKey:CreatedBy" json:"creator"`
+	CreatedBy  string    `json:"-"`
+	CreatedAt  time.Time `time_format:"sql_date" json:"created_at"`
+	UpdatedAt  time.Time `time_format:"sql_date" json:"updated_at"`
 }
 
 type Pastes []Paste
@@ -36,15 +30,16 @@ func (Paste) TableName() string {
 }
 
 func (p *Paste) Create() error {
-	if len(p.Code) < 1 {
+	if len(p.Content) < 1 {
 		return errors.New("content must containt at least a word")
 	}
+	p.ID = uuid.NewString()
 	return db.Create(&p).Error
 }
 
 func (p *Paste) Update() (err error) {
 	var paste Paste
-	if len(p.Code) < 1 {
+	if len(p.Content) < 1 {
 		return errors.New("content must containt at least a word")
 	}
 

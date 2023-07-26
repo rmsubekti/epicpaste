@@ -10,11 +10,12 @@ import (
 )
 
 type Account struct {
-	ID       string `gorm:"type:varchar(40);primarykey:true;not null;unique"`
-	UserName string `gorm:"type:varchar(60);not null;unique"`
-	User     User   `gorm:"foreignKey:ID;references:ID"`
-	Email    string `gorm:"type:varchar(40);not null;unique"`
-	Password string `gorm:"type:char(200);not null"`
+	ID       string         `gorm:"type:varchar(40);primarykey:true;not null;unique"`
+	UserName string         `gorm:"type:varchar(60);not null;unique"`
+	Email    string         `gorm:"type:varchar(40);not null;unique"`
+	Password string         `gorm:"type:char(200);not null"`
+	User     User           `gorm:"foreignKey:ID;references:ID"`
+	Setting  AccountSetting `gorm:"foreignKey:ID;references:ID"`
 }
 
 func (Account) TableName() string {
@@ -40,16 +41,20 @@ func (a *Account) Register() (err error) {
 	// save hashed password to db
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(a.Password), bcrypt.DefaultCost)
 	a.Password = string(hashedPassword)
+	a.User = User{
+		ID:   a.ID,
+		Name: utils.GenerateNewName(),
+	}
+	a.Setting = AccountSetting{
+		ID:        a.ID,
+		Crawlable: false,
+	}
 
 	if err = db.Create(&a).Error; err != nil {
 		return
 	}
 
-	// create user profile
-	return db.Create(&User{
-		ID:   a.ID,
-		Name: utils.GenerateNewName(),
-	}).Error
+	return
 }
 
 func (a *Account) Login() error {
@@ -68,4 +73,8 @@ func (a *Account) Login() error {
 		return errors.New("wrong password")
 	}
 	return nil
+}
+
+func (a *Account) Get(id string) error {
+	return db.First(&a, "id = ?", id).Error
 }

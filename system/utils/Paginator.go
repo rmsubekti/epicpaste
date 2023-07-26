@@ -10,6 +10,7 @@ type Paginator struct {
 	Limit      int    `form:"limit, omitempty" json:"limit"`
 	Page       int    `form:"page, omitempty" json:"page"`
 	Sort       string `form:"sort, omitempty" json:"sort"`
+	Query      string `form:"q, omitempty" json:"query"`
 	TotalRows  int64  `json:"total_rows"`
 	TotalPages int    `json:"total_pages"`
 	Rows       any    `json:"rows"`

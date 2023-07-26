@@ -58,3 +58,21 @@ var UserRegister = func(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"data": true})
 }
+
+var UserProfile = func(c *gin.Context) {
+	var account model.Account
+	id := c.Param("id")
+	visitor, _ := c.Get("user")
+
+	if err := account.Get(id); err != nil {
+		utils.JSONErr(http.StatusNotFound, c, nil)
+		return
+	}
+
+	if !account.Setting.Crawlable && visitor == nil {
+		utils.JSONErr(http.StatusNotFound, c, nil)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": account.User})
+}

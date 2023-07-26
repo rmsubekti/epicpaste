@@ -17,6 +17,7 @@ func init() {
 
 	db.AutoMigrate(
 		&Account{},
+		&AccountSetting{},
 		&User{},
 		&Tag{},
 		&Category{},
