@@ -2,6 +2,7 @@ package main
 
 import (
 	webapp "epicpaste/app"
+	"epicpaste/proto"
 	"net/http"
 	"time"
 
@@ -11,7 +12,7 @@ import (
 
 func main() {
 	app := gin.Default()
-
+	go proto.Start()
 	config := cors.Config{
 		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"POST", "GET", "DELETE"},
@@ -28,5 +29,6 @@ func main() {
 			"Message": "Status OK",
 		})
 	})
-	app.Run()
+	app.Run(":8000")
+
 }

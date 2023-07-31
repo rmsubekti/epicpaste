@@ -14,7 +14,7 @@ type Paste struct {
 	Content    string    `gorm:"type:text;not null" json:"content"`
 	Public     bool      `json:"public"`
 	Languange  string    `json:"language"`
-	Tag        *[]Tag    `gorm:"Many2Many:master.paste_tag;FOREIGNKEY:ID;ASSOCIATION_FOREIGNKEY:ID;" json:"tag,omitempty"`
+	Tags       *[]Tag    `gorm:"Many2Many:master.paste_tag;FOREIGNKEY:ID;ASSOCIATION_FOREIGNKEY:ID;" json:"tag,omitempty"`
 	Category   *Category `gorm:"foreignKey:CategoryId" json:"category,omitempty"`
 	CategoryId *uint     `json:"-"`
 	Paster     User      `gorm:"foreignKey:CreatedBy" json:"creator"`
