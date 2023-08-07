@@ -11,8 +11,9 @@ import (
 
 type Paste struct {
 	ID         string    `gorm:"primarykey:true" json:"id"`
+	Title      string    `gorm:"type:varchar(125);not null" json:"title"`
 	Content    string    `gorm:"type:text;not null" json:"content"`
-	Public     bool      `json:"public"`
+	Public     *bool     `json:"public"`
 	Languange  string    `json:"language"`
 	Tags       *[]Tag    `gorm:"Many2Many:master.paste_tag;FOREIGNKEY:ID;ASSOCIATION_FOREIGNKEY:ID;" json:"tag,omitempty"`
 	Category   *Category `gorm:"foreignKey:CategoryId" json:"category,omitempty"`
@@ -30,6 +31,9 @@ func (Paste) TableName() string {
 }
 
 func (p *Paste) Create() error {
+	if len(p.Title) < 1 {
+		return errors.New("title must containt at least a word")
+	}
 	if len(p.Content) < 1 {
 		return errors.New("content must containt at least a word")
 	}

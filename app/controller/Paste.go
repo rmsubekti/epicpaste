@@ -84,7 +84,7 @@ var ViewPaste = func(c *gin.Context) {
 		return
 	}
 
-	if !paste.Public || (user != nil && paste.CreatedBy != user.(model.User).ID) {
+	if !*paste.Public || (user != nil && paste.CreatedBy != user.(model.User).ID) {
 		utils.JSONErr(http.StatusNotFound, c, nil)
 		return
 	}

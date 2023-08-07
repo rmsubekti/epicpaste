@@ -21,11 +21,11 @@ func GetDB() *gorm.DB {
 	}
 
 	//database info
-	user := os.Getenv("PSQL_USER")
-	password := os.Getenv("PSQL_PASSWORD")
-	dbName := os.Getenv("PSQL_DB")
-	host := os.Getenv("PSQL_HOST")
-	sslMode := os.Getenv("PSQL_SSLMODE")
+	user := os.Getenv("POSTGRES_USER")
+	password := os.Getenv("POSTGRES_PASSWORD")
+	dbName := os.Getenv("POSTGRES_DB")
+	host := os.Getenv("POSTGRES_HOST")
+	sslMode := os.Getenv("POSTGRES_SSLMODE")
 
 	//database uri
 	dbUri := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=%s password=%s", host, user, dbName, sslMode, password)
