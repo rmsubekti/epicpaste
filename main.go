@@ -26,8 +26,10 @@ func main() {
 	}
 
 	app.Use(cors.New(config))
+	app.Static("/", "./public")
+	
 	webapp.Serve(app)
-
+	
 	app.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"Message": "Status OK",

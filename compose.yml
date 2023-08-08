@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: EpicPaste*password*
+      POSTGRES_DB: epicpaste
+    ports:
+      - 5432:5432
+
+  epicpaste:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: epicpaste
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: EpicPaste*password*
+      POSTGRES_HOSTNAME: db
+    volumes:
+      - ./:/epicpaste
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
