@@ -26,7 +26,7 @@ func main() {
 	}
 
 	app.Use(cors.New(config))
-	app.Static("/", "./public")
+	// app.Static("/", "./public")
 
 	webapp.Serve(app)
 
