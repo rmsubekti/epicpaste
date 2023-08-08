@@ -14,8 +14,11 @@ import (
 func main() {
 	app := gin.Default()
 	PORT := os.Getenv("PORT")
+	GRPC:= os.Getenv("GRPC")
 
-	go proto.Start()
+	if GRPC == "true" {
+		go proto.Start()
+	}
 
 	config := cors.Config{
 		AllowOrigins:     []string{"*"},
@@ -26,7 +29,6 @@ func main() {
 	}
 
 	app.Use(cors.New(config))
-	// app.Static("/", "./public")
 
 	webapp.Serve(app)
 
