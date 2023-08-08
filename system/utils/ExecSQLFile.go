@@ -9,7 +9,7 @@ import (
 )
 
 func ExecSQLFile(fileName string, db *gorm.DB) {
-	filePath, _ := filepath.Abs("./system/sql/" + fileName)
+	filePath, _ := filepath.Abs("./sql/" + fileName)
 	if sql, err := os.ReadFile(filePath); err == nil {
 		db.Exec(string(sql))
 	} else {
