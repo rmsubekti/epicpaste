@@ -5,6 +5,7 @@ import (
 	"epicpaste/proto"
 	"net/http"
 	"time"
+	"os"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -12,7 +13,10 @@ import (
 
 func main() {
 	app := gin.Default()
+	PORT:=os.Getenv("PORT")
+
 	go proto.Start()
+
 	config := cors.Config{
 		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"POST", "GET", "DELETE"},
@@ -29,6 +33,6 @@ func main() {
 			"Message": "Status OK",
 		})
 	})
-	app.Run(":8000")
+	app.Run(":"+PORT)
 
 }

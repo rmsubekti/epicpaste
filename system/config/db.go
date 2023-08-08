@@ -24,7 +24,7 @@ func GetDB() *gorm.DB {
 	user := os.Getenv("POSTGRES_USER")
 	password := os.Getenv("POSTGRES_PASSWORD")
 	dbName := os.Getenv("POSTGRES_DB")
-	host := os.Getenv("POSTGRES_HOST")
+	host := os.Getenv("POSTGRES_HOSTNAME")
 	sslMode := os.Getenv("POSTGRES_SSLMODE")
 
 	//database uri
