@@ -1,14 +1,10 @@
 
 tasks:
   - init: go get && go build ./... && go test ./...
-    command: go run .
-
-
+    # command: go run .
 
 vscode:
   extensions:
     - ms-azuretools.vscode-dockerlearn-gitpod/gitpod-yaml)
-# and commit this file to your remote git repository to share the goodness with others.
-
+    - ms-azuretools.vscode-docker# and commit this file to your remote git repository to share the goodness with others.
 # Learn more from ready-to-use templates: https://www.gitpod.io/docs/introduction/getting-started/quickstart
-

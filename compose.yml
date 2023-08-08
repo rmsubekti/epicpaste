@@ -17,12 +17,11 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_DB: epicpaste
-      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: EpicPaste*password*
       POSTGRES_HOSTNAME: db
     volumes:
       - ./:/epicpaste
     ports:
-      - 8080:8080
+      - 3030:3030
     depends_on:
       - db
