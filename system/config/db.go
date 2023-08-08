@@ -25,10 +25,11 @@ func GetDB() *gorm.DB {
 	password := os.Getenv("POSTGRES_PASSWORD")
 	dbName := os.Getenv("POSTGRES_DB")
 	host := os.Getenv("POSTGRES_HOSTNAME")
+	dbport := os.Getenv("POSTGRES_PORT")
 	sslMode := os.Getenv("POSTGRES_SSLMODE")
 
 	//database uri
-	dbUri := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=%s password=%s", host, user, dbName, sslMode, password)
+	dbUri := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s ", host, user, password, dbName, dbport, sslMode)
 
 	//connect to database
 	for i := 0; i < 5; i++ {

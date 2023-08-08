@@ -4,8 +4,8 @@ import (
 	webapp "epicpaste/app"
 	"epicpaste/proto"
 	"net/http"
-	"time"
 	"os"
+	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -13,7 +13,7 @@ import (
 
 func main() {
 	app := gin.Default()
-	PORT:=os.Getenv("PORT")
+	PORT := os.Getenv("PORT")
 
 	go proto.Start()
 
@@ -27,14 +27,14 @@ func main() {
 
 	app.Use(cors.New(config))
 	app.Static("/", "./public")
-	
+
 	webapp.Serve(app)
-	
+
 	app.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"Message": "Status OK",
 		})
 	})
-	app.Run(":"+PORT)
+	app.Run(":" + PORT)
 
 }
