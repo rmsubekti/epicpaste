@@ -7,16 +7,14 @@
 
 	"features": {
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {
-			"version": "latest",
+			"version": "20.10",
 			"enableNonRootDocker": "true",
-			"moby": "true"
-		},
-		"ghcr.io/devcontainers/features/go:1": {},
-		"ghcr.io/devcontainers-contrib/features/postgres-asdf:1": {}
-	},
+			"moby": "false"
+		}
+	}
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": ["3030"],
+	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "docker --version",
