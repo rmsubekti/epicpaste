@@ -1,9 +1,9 @@
 package controller
 
 import (
-	"epicpaste/app/utils"
+	"epicpaste/api/utils"
 	"epicpaste/system/model"
-	sutil "epicpaste/system/utils"
+	u "epicpaste/system/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -92,7 +92,7 @@ var ViewPaste = func(c *gin.Context) {
 }
 
 var ListPublicPaste = func(c *gin.Context) {
-	var paginator sutil.Paginator
+	var paginator u.Paginator
 	var pastes model.Pastes
 
 	if err := c.Bind(&paginator); err != nil {
@@ -108,7 +108,7 @@ var ListPublicPaste = func(c *gin.Context) {
 	c.JSON(http.StatusOK, paginator)
 }
 var UserPastes = func(c *gin.Context) {
-	var paginator sutil.Paginator
+	var paginator u.Paginator
 	var pastes model.Pastes
 	visitor, _ := c.Get("user")
 	ownerId := c.Param("userId")

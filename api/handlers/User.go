@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"epicpaste/app/utils"
+	"epicpaste/api/utils"
 	"epicpaste/system/auth"
 	"epicpaste/system/model"
 	"net/http"

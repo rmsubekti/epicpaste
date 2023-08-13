@@ -1,7 +1,7 @@
 package main
 
 import (
-	webapp "epicpaste/app"
+	"epicpaste/api"
 	"epicpaste/proto"
 	"net/http"
 	"os"
@@ -14,7 +14,7 @@ import (
 func main() {
 	app := gin.Default()
 	PORT := os.Getenv("PORT")
-	GRPC:= os.Getenv("GRPC")
+	GRPC := os.Getenv("GRPC")
 
 	if GRPC == "true" {
 		go proto.Start()
@@ -30,7 +30,7 @@ func main() {
 
 	app.Use(cors.New(config))
 
-	webapp.Serve(app)
+	api.Serve(app)
 
 	app.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
