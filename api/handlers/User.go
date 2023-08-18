@@ -1,4 +1,4 @@
-package controller
+package handlers
 
 import (
 	"epicpaste/api/utils"
@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var UserLogin = func(c *gin.Context) {
+func UserLogin(c *gin.Context) {
 	var account model.Account
 	const sessionDays = 1
 	if err := c.ShouldBindJSON(&account); err != nil {
@@ -43,7 +43,7 @@ var UserLogin = func(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"user": user, "token": token, "expire_days": sessionDays, "signed_date": time.Now()})
 }
 
-var UserRegister = func(c *gin.Context) {
+func UserRegister(c *gin.Context) {
 	var account model.Account
 
 	if err := c.ShouldBindJSON(&account); err != nil {
@@ -59,7 +59,7 @@ var UserRegister = func(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": true})
 }
 
-var UserProfile = func(c *gin.Context) {
+func UserProfile(c *gin.Context) {
 	var account model.Account
 	id := c.Param("id")
 	visitor, _ := c.Get("user")

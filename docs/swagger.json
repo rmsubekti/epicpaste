@@ -1,0 +1,52 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "A snippet management service API in Go using Gin framework.",
+        "title": "Epic Paste Service",
+        "termsOfService": "https://bekti.net",
+        "contact": {
+            "name": "Rahmat Subekti",
+            "url": "https://twitter.com/rmsiannnaksnfe",
+            "email": "rmssssssgmail@gmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:3030",
+    "basePath": "/v1",
+    "paths": {
+        "/string/{some_id}": {
+            "get": {
+                "description": "Test Description",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Add a new paste to the store",
+                "operationId": "get-string-by-int",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Some ID",
+                        "name": "some_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

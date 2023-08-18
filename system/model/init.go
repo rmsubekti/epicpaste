@@ -2,7 +2,7 @@ package model
 
 import (
 	"epicpaste/system/config"
-	"epicpaste/system/utils"
+	"epicpaste/system/sql"
 
 	"gorm.io/gorm"
 )
@@ -11,9 +11,10 @@ var db *gorm.DB
 
 func init() {
 	db = config.GetDB()
+	sql := sql.Populate()
 
 	// init extensions, schemas, and functions
-	utils.ExecSQLFile("before_table.sql", db)
+	sql.ExecFile("before_create_table.sql", db)
 
 	db.AutoMigrate(
 		&Account{},
@@ -25,10 +26,10 @@ func init() {
 	)
 
 	// init table function and trigger relations
-	utils.ExecSQLFile("after_table.sql", db)
+	sql.ExecFile("after_create_table.sql", db)
 
 	// init dummy data
-	utils.ExecSQLFile("dummy_user.sql", db)
-	utils.ExecSQLFile("dummy_paste.sql", db)
+	sql.ExecFile("dummy_user.sql", db)
+	sql.ExecFile("dummy_paste.sql", db)
 
 }

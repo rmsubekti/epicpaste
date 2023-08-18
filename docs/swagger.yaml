@@ -1,0 +1,36 @@
+basePath: /v1
+host: localhost:3030
+info:
+  contact:
+    email: rmssssssgmail@gmail.com
+    name: Rahmat Subekti
+    url: https://twitter.com/rmsiannnaksnfe
+  description: A snippet management service API in Go using Gin framework.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: https://bekti.net
+  title: Epic Paste Service
+  version: "1.0"
+paths:
+  /string/{some_id}:
+    get:
+      consumes:
+      - application/json
+      description: Test Description
+      operationId: get-string-by-int
+      parameters:
+      - description: Some ID
+        in: path
+        name: some_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+      summary: Add a new paste to the store
+swagger: "2.0"
