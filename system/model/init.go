@@ -14,7 +14,7 @@ func init() {
 	sql := sql.Populate()
 
 	// init extensions, schemas, and functions
-	sql.ExecFile("before_create_table.sql", db)
+	sql.ExecFile("before_create_table", db)
 
 	db.AutoMigrate(
 		&Account{},
@@ -26,10 +26,10 @@ func init() {
 	)
 
 	// init table function and trigger relations
-	sql.ExecFile("after_create_table.sql", db)
+	sql.ExecFile("after_create_table", db)
 
 	// init dummy data
-	sql.ExecFile("dummy_user.sql", db)
-	sql.ExecFile("dummy_paste.sql", db)
+	sql.ExecFile("dummy_user", db)
+	sql.ExecFile("dummy_paste", db)
 
 }

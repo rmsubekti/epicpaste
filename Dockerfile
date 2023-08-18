@@ -7,7 +7,6 @@ COPY . .
 RUN go mod tidy
 RUN mkdir /server
 RUN cp .env /server/ 
-# RUN cp -r sql /server/sql
 RUN go build -o /server/epicpaste main.go
 
 FROM alpine:latest  
