@@ -1,4 +1,61 @@
 basePath: /v1
+definitions:
+  handlers.Response:
+    properties:
+      code:
+        type: integer
+      data: {}
+      deletedId: {}
+      message:
+        type: string
+      status:
+        type: string
+    type: object
+  model.Category:
+    properties:
+      name:
+        type: string
+    type: object
+  model.Paste:
+    properties:
+      category:
+        $ref: '#/definitions/model.Category'
+      content:
+        type: string
+      id:
+        type: string
+      language:
+        type: string
+      public:
+        type: boolean
+      tag:
+        items:
+          $ref: '#/definitions/model.Tag'
+        type: array
+      title:
+        type: string
+    type: object
+  model.Tag:
+    properties:
+      name:
+        type: string
+    type: object
+  utils.Paginator:
+    properties:
+      limit:
+        type: integer
+      page:
+        type: integer
+      query:
+        type: string
+      rows: {}
+      sort:
+        type: string
+      total_pages:
+        type: integer
+      total_rows:
+        type: integer
+    type: object
 host: localhost:3030
 info:
   contact:
@@ -13,24 +70,230 @@ info:
   title: Epic Paste Service
   version: "1.0"
 paths:
-  /string/{some_id}:
+  /{userId}/paste:
     get:
-      consumes:
-      - application/json
-      description: Test Description
-      operationId: get-string-by-int
+      description: Pastes can be viewed depending on logged in user
       parameters:
-      - description: Some ID
+      - description: User ID
         in: path
-        name: some_id
+        name: userId
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
         "200":
-          description: ok
+          description: OK
           schema:
-            type: string
-      summary: Add a new paste to the store
+            allOf:
+            - $ref: '#/definitions/handlers.Response'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/utils.Paginator'
+                  - properties:
+                      rows:
+                        items:
+                          $ref: '#/definitions/model.Paste'
+                        type: array
+                    type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: View  list of pastes
+      tags:
+      - paste
+  /paste:
+    get:
+      description: Pastes can be viewed depending on visibility status of the paste
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.Response'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/utils.Paginator'
+                  - properties:
+                      rows:
+                        items:
+                          $ref: '#/definitions/model.Paste'
+                        type: array
+                    type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: View  list of pastes
+      tags:
+      - paste
+    post:
+      consumes:
+      - application/json
+      description: Currently login user can create a new paste
+      parameters:
+      - description: Body payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.Paste'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Paste'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: Create a new paste
+      tags:
+      - paste
+  /paste/{id}:
+    delete:
+      description: Only owner can delete the paste
+      parameters:
+      - description: Paste ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Paste'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: Delete a paste
+      tags:
+      - paste
+    get:
+      description: Paste can be viewed depending on visibility status of the paste
+      parameters:
+      - description: Paste ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Paste'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: View a paste
+      tags:
+      - paste
+    post:
+      consumes:
+      - application/json
+      description: Only owner can edit the paste
+      parameters:
+      - description: Paste ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Paste'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: Edit a paste
+      tags:
+      - paste
 swagger: "2.0"

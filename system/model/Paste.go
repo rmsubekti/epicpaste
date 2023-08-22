@@ -18,10 +18,10 @@ type Paste struct {
 	Tags       *[]Tag    `gorm:"Many2Many:master.paste_tag;FOREIGNKEY:ID;ASSOCIATION_FOREIGNKEY:ID;" json:"tag,omitempty"`
 	Category   *Category `gorm:"foreignKey:CategoryId" json:"category,omitempty"`
 	CategoryId *uint     `json:"-"`
-	Paster     User      `gorm:"foreignKey:CreatedBy" json:"creator"`
-	CreatedBy  string    `json:"-"`
-	CreatedAt  time.Time `time_format:"sql_date" json:"created_at"`
-	UpdatedAt  time.Time `time_format:"sql_date" json:"updated_at"`
+	Paster     User      `gorm:"foreignKey:CreatedBy" json:"creator" swaggerignore:"true"`
+	CreatedBy  string    `json:"-" swaggerignore:"true"`
+	CreatedAt  time.Time `time_format:"sql_date" json:"created_at" swaggerignore:"true"`
+	UpdatedAt  time.Time `time_format:"sql_date" json:"updated_at" swaggerignore:"true"`
 }
 
 type Pastes []Paste

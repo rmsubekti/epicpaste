@@ -1,7 +1,7 @@
 package model
 
 type Category struct {
-	ID   uint
+	ID   uint   `swaggerignore:"true"`
 	Name string `gorm:"type:varchar(40)"`
 }
 
