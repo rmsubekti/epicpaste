@@ -15,10 +15,10 @@ type Paste struct {
 	Content    string    `gorm:"type:text;not null" json:"content"`
 	Public     *bool     `json:"public"`
 	Languange  string    `json:"language"`
-	Tags       *[]Tag    `gorm:"Many2Many:master.paste_tag;FOREIGNKEY:ID;ASSOCIATION_FOREIGNKEY:ID;" json:"tag,omitempty"`
+	Tags       *Tags     `gorm:"Many2Many:master.paste_tag;FOREIGNKEY:ID;ASSOCIATION_FOREIGNKEY:ID;" json:"tag,omitempty"`
 	Category   *Category `gorm:"foreignKey:CategoryId" json:"category,omitempty"`
 	CategoryId *uint     `json:"-"`
-	Paster     User      `gorm:"foreignKey:CreatedBy" json:"creator" swaggerignore:"true"`
+	Paster     User      `gorm:"foreignKey:CreatedBy" json:"paster" swaggerignore:"true"`
 	CreatedBy  string    `json:"-" swaggerignore:"true"`
 	CreatedAt  time.Time `time_format:"sql_date" json:"created_at" swaggerignore:"true"`
 	UpdatedAt  time.Time `time_format:"sql_date" json:"updated_at" swaggerignore:"true"`
@@ -37,12 +37,16 @@ func (p *Paste) Create() error {
 	if len(p.Content) < 1 {
 		return errors.New("content must containt at least a word")
 	}
+
 	p.ID = uuid.NewString()
+	p.Category.SetAvailable()
+	p.Tags.SetAvailable()
 	return db.Create(&p).Error
 }
 
 func (p *Paste) Update() (err error) {
 	var paste Paste
+	tagTemp := &Tags{}
 	if len(p.Content) < 1 {
 		return errors.New("content must containt at least a word")
 	}
@@ -56,7 +60,14 @@ func (p *Paste) Update() (err error) {
 	}
 
 	p.UpdatedAt = time.Now()
-	return db.Save(&p).Error
+	p.Category.SetAvailable()
+	tagTemp = p.Tags
+	if err = db.Model(&p).Association("Tags").Clear(); err != nil {
+		return
+	}
+	tagTemp.SetAvailable()
+	p.Tags = tagTemp
+	return db.Omit("Paster").Save(&p).Error
 }
 
 func (p *Paste) Delete() (err error) {
@@ -69,8 +80,13 @@ func (p *Paste) Delete() (err error) {
 	if paste.CreatedBy != p.CreatedBy {
 		return errors.New("you dont have access to this paste")
 	}
+
+	if err = db.Model(&p).Association("Tags").Clear(); err != nil {
+		return
+	}
+	err = db.Delete(&p).Error
 	p = &paste
-	return db.Delete(&p).Error
+	return
 }
 
 func (p *Paste) Get(id string) error {

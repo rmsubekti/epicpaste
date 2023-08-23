@@ -1,14 +1,41 @@
 basePath: /v1
 definitions:
+  handlers.LoginResponse:
+    properties:
+      expire_days:
+        type: integer
+      full_name:
+        type: string
+      id:
+        type: string
+      signed_date:
+        type: string
+      token:
+        type: string
+      user_name:
+        type: string
+    type: object
   handlers.Response:
     properties:
-      code:
-        type: integer
       data: {}
-      deletedId: {}
       message:
         type: string
       status:
+        type: string
+    type: object
+  model.Account:
+    properties:
+      email:
+        description: |-
+          must be valid email address
+          cannot start with or end with non alphanumeric
+          charachter (`.` and `-`) are allowed
+        type: string
+      password:
+        description: any string character
+        type: string
+      username:
+        description: any combination of alphanumeric charachter allowed
         type: string
     type: object
   model.Category:
@@ -40,6 +67,13 @@ definitions:
       name:
         type: string
     type: object
+  model.User:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
   utils.Paginator:
     properties:
       limit:
@@ -59,20 +93,21 @@ definitions:
 host: localhost:3030
 info:
   contact:
-    email: rmssssssgmail@gmail.com
+    email: rmsubekti2011@gmail.com
     name: Rahmat Subekti
-    url: https://twitter.com/rmsiannnaksnfe
+    url: https://bekti.net/social
   description: A snippet management service API in Go using Gin framework.
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  termsOfService: https://bekti.net
   title: Epic Paste Service
   version: "1.0"
 paths:
   /{userId}/paste:
     get:
-      description: Pastes can be viewed depending on logged in user
+      description: |-
+        Pastes can be viewed depending on logged in user
+        Bearer Token is Optional, Use bearer token to see private user pastes
       parameters:
       - description: User ID
         in: path
@@ -110,12 +145,94 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/handlers.Response'
+      security:
+      - Bearer: []
       summary: View  list of pastes
       tags:
-      - paste
+      - user
+  /{username}:
+    get:
+      description: |-
+        View user profile
+        Bearer Token is Optional, Use bearer token to see private user
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.User'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      security:
+      - Bearer: []
+      summary: View  user profile
+      tags:
+      - user
+  /login:
+    post:
+      description: Create new user session
+      parameters:
+      - description: ' Body payload message/rfc822'
+        in: body
+        name: request
+        required: true
+        schema:
+          example: "{\n\t\"username\": \"epicpaster\",\n\t\"password\": \"5uperSecret\"\n}"
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/handlers.LoginResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: User Login
+      tags:
+      - user
   /paste:
     get:
-      description: Pastes can be viewed depending on visibility status of the paste
+      description: |-
+        Pastes can be viewed depending on visibility status of the paste
+        Bearer Token is Optional
       produces:
       - application/json
       responses:
@@ -147,6 +264,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/handlers.Response'
+      security:
+      - Bearer: []
       summary: View  list of pastes
       tags:
       - paste
@@ -185,6 +304,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/handlers.Response'
+      security:
+      - Bearer: []
       summary: Create a new paste
       tags:
       - paste
@@ -221,11 +342,15 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/handlers.Response'
+      security:
+      - Bearer: []
       summary: Delete a paste
       tags:
       - paste
     get:
-      description: Paste can be viewed depending on visibility status of the paste
+      description: |-
+        Paste can be viewed depending on visibility status of the paste.
+        Bearer Token is Optional
       parameters:
       - description: Paste ID
         in: path
@@ -256,14 +381,22 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/handlers.Response'
+      security:
+      - Bearer: []
       summary: View a paste
       tags:
       - paste
-    post:
+    patch:
       consumes:
       - application/json
       description: Only owner can edit the paste
       parameters:
+      - description: Body payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.Paste'
       - description: Paste ID
         in: path
         name: id
@@ -293,7 +426,52 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/handlers.Response'
+      security:
+      - Bearer: []
       summary: Edit a paste
       tags:
       - paste
+  /register:
+    post:
+      description: Register a new user
+      parameters:
+      - description: Body payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.Account'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.Response'
+            - properties:
+                data:
+                  type: boolean
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: Register a new user
+      tags:
+      - user
+securityDefinitions:
+  Bearer:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

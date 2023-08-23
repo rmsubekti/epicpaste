@@ -3,6 +3,7 @@ package model
 import (
 	"epicpaste/system/utils"
 	"errors"
+	"regexp"
 
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -10,19 +11,36 @@ import (
 )
 
 type Account struct {
-	ID       string         `gorm:"type:varchar(40);primarykey:true;not null;unique"`
-	UserName string         `gorm:"type:varchar(60);not null;unique"`
-	Email    string         `gorm:"type:varchar(40);not null;unique"`
-	Password string         `gorm:"type:char(200);not null"`
-	User     User           `gorm:"foreignKey:ID;references:ID"`
-	Setting  AccountSetting `gorm:"foreignKey:ID;references:ID"`
+	ID string `json:"id" gorm:"type:varchar(40);primarykey:true;not null;unique" swaggerignore:"true"`
+	//any combination of alphanumeric charachter allowed
+	UserName string `json:"username" gorm:"type:varchar(60);not null;unique"`
+	//must be valid email address
+	//cannot start with or end with non alphanumeric
+	//charachter (`.` and `-`) are allowed
+	Email string `json:"email" gorm:"type:varchar(40);not null;unique"`
+	//any string character
+	Password string         `json:"password" gorm:"type:char(200);not null"`
+	User     User           `json:"user" gorm:"foreignKey:ID;references:UserName" swaggerignore:"true"`
+	Setting  AccountSetting `json:"setting" gorm:"foreignKey:ID;references:ID" swaggerignore:"true"`
 }
+
+var (
+	mailRegex   = regexp.MustCompile(`^(?:[[:alnum:]]+[[:alnum:]\-\.]+[[:alnum:]])+@(?:[[:alnum:]]+[[:alnum:]\-\.]+[[:alnum:]])+\.(?:[[:alpha:]]{2,6})$`)
+	allNumRegex = regexp.MustCompile(`^(?:[[:alnum:]]+)$`)
+)
 
 func (Account) TableName() string {
 	return "user.account"
 }
 
 func (a *Account) Register() (err error) {
+	if !mailRegex.MatchString(a.Email) {
+		return errors.New("format email tidak sesuai")
+	}
+
+	if !allNumRegex.MatchString(a.UserName) {
+		return errors.New("username hanya berisi karakter alphanumeric")
+	}
 
 	account := &Account{}
 	if result := db.First(account, "email = ?", a.Email); result.RowsAffected > 0 {
@@ -42,7 +60,7 @@ func (a *Account) Register() (err error) {
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(a.Password), bcrypt.DefaultCost)
 	a.Password = string(hashedPassword)
 	a.User = User{
-		ID:   a.ID,
+		ID:   a.UserName,
 		Name: utils.GenerateNewName(),
 	}
 	a.Setting = AccountSetting{
@@ -53,7 +71,6 @@ func (a *Account) Register() (err error) {
 	if err = db.Create(&a).Error; err != nil {
 		return
 	}
-
 	return
 }
 
@@ -75,6 +92,24 @@ func (a *Account) Login() error {
 	return nil
 }
 
-func (a *Account) Get(id string) error {
-	return db.First(&a, "id = ?", id).Error
+func (a *Account) Get(username string) error {
+	return db.First(&a, "user_name = ?", username).Error
+}
+
+func (a *Account) Update(id string) error {
+	temp := &Account{}
+	*temp = *a
+
+	if a.Email != "" && !mailRegex.MatchString(a.Email) {
+		return errors.New("your email is not valid")
+	}
+
+	if a.UserName != "" && !allNumRegex.MatchString(a.UserName) {
+		return errors.New("username should be using alphanumeric character")
+	}
+
+	if err := a.Get(id); err != nil {
+		return err
+	}
+	return db.Model(&a).Updates(&temp).Error
 }

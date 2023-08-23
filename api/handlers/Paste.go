@@ -20,6 +20,7 @@ import (
 // @Failure      401  {object}  Response
 // @Failure      500  {object}  Response
 // @Router /paste [post]
+// @Security Bearer
 func CreatePaste(c *gin.Context) {
 	var (
 		paste    model.Paste
@@ -63,12 +64,14 @@ func CreatePaste(c *gin.Context) {
 // @Tags         paste
 // @Accept  json
 // @Produce  json
+// @Param request body model.Paste true "Body payload"
 // @Param        id   path      string  true  "Paste ID"
 // @Success 200 {object} Response{data=model.Paste}
 // @Failure      400  {object}  Response
 // @Failure      401  {object}  Response
 // @Failure      500  {object}  Response
-// @Router /paste/{id} [post]
+// @Router /paste/{id} [patch]
+// @Security Bearer
 func EditPaste(c *gin.Context) {
 	var (
 		paste    model.Paste
@@ -78,6 +81,10 @@ func EditPaste(c *gin.Context) {
 	)
 
 	if user, ok = c.Get("user"); !ok || user == nil {
+		response = Response{
+			Code:    http.StatusUnauthorized,
+			Message: "Please login first",
+		}
 		response.Code = http.StatusUnauthorized
 		response.Json(c)
 		return
@@ -118,6 +125,7 @@ func EditPaste(c *gin.Context) {
 // @Failure      401  {object}  Response
 // @Failure      500  {object}  Response
 // @Router /paste/{id} [delete]
+// @Security Bearer
 func DeletePaste(c *gin.Context) {
 	var (
 		paste    model.Paste
@@ -144,16 +152,17 @@ func DeletePaste(c *gin.Context) {
 	}
 
 	response = Response{
-		Code:      http.StatusOK,
-		Data:      paste,
-		DeletedId: paste.ID,
+		Code:    http.StatusOK,
+		Data:    paste,
+		Message: "Deleted successfully",
 	}
 	response.Json(c)
 }
 
 // ViewPaste godoc
 // @Summary View a paste
-// @Description Paste can be viewed depending on visibility status of the paste
+// @Description Paste can be viewed depending on visibility status of the paste.
+// @Description Bearer Token is Optional
 // @Tags         paste
 // @Produce  json
 // @Param        id   path      string  true  "Paste ID"
@@ -162,6 +171,7 @@ func DeletePaste(c *gin.Context) {
 // @Failure      401  {object}  Response
 // @Failure      500  {object}  Response
 // @Router /paste/{id} [get]
+// @Security Bearer
 func ViewPaste(c *gin.Context) {
 	var paste model.Paste
 	var response Response
@@ -189,6 +199,7 @@ func ViewPaste(c *gin.Context) {
 // ListPublicPaste godoc
 // @Summary View  list of pastes
 // @Description Pastes can be viewed depending on visibility status of the paste
+// @Description Bearer Token is Optional
 // @Tags         paste
 // @Produce  json
 // @Success 200 {object} Response{data=u.Paginator{rows=model.Pastes}}
@@ -196,6 +207,7 @@ func ViewPaste(c *gin.Context) {
 // @Failure      401  {object}  Response
 // @Failure      500  {object}  Response
 // @Router /paste [get]
+// @Security Bearer
 func ListPublicPaste(c *gin.Context) {
 	var paginator u.Paginator
 	var pastes model.Pastes
@@ -217,59 +229,6 @@ func ListPublicPaste(c *gin.Context) {
 		}
 		response.Json(c)
 		return
-	}
-
-	response = Response{Code: http.StatusOK, Data: paginator}
-	response.Json(c)
-}
-
-// UserPastes godoc
-// @Summary View  list of pastes
-// @Description Pastes can be viewed depending on logged in user
-// @Tags         paste
-// @Produce  json
-// @Param        userId   path      string  true  "User ID"
-// @Success 200 {object} Response{data=u.Paginator{rows=model.Pastes}}
-// @Failure      400  {object}  Response
-// @Failure      401  {object}  Response
-// @Failure      500  {object}  Response
-// @Router /{userId}/paste [get]
-func UserPastes(c *gin.Context) {
-	var paginator u.Paginator
-	var pastes model.Pastes
-	var response Response
-	visitor, _ := c.Get("user")
-	ownerId := c.Param("userId")
-
-	if err := c.Bind(&paginator); err != nil {
-		response = Response{
-			Code:    http.StatusBadRequest,
-			Message: err.Error(),
-		}
-		response.Json(c)
-		return
-	}
-
-	if visitor != nil && visitor.(model.User).ID == ownerId {
-		// all pastes by user
-		if err := pastes.ListByUser(ownerId, false, &paginator); err != nil {
-			response = Response{
-				Code:    http.StatusInternalServerError,
-				Message: err.Error(),
-			}
-			response.Json(c)
-			return
-		}
-	} else {
-		// list all public
-		if err := pastes.ListByUser(ownerId, true, &paginator); err != nil {
-			response = Response{
-				Code:    http.StatusInternalServerError,
-				Message: err.Error(),
-			}
-			response.Json(c)
-			return
-		}
 	}
 
 	response = Response{Code: http.StatusOK, Data: paginator}

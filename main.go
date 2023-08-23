@@ -2,7 +2,7 @@ package main
 
 import (
 	"epicpaste/api"
-	_ "epicpaste/docs"
+	"epicpaste/docs"
 	"epicpaste/proto"
 	"net/http"
 	"os"
@@ -17,21 +17,27 @@ import (
 // @title           Epic Paste Service
 // @version         1.0
 // @description     A snippet management service API in Go using Gin framework.
-// @termsOfService  https://bekti.net
 
 // @contact.name   Rahmat Subekti
-// @contact.url    https://twitter.com/rmsiannnaksnfe
-// @contact.email  rmssssssgmail@gmail.com
+// @contact.url    https://bekti.net/social
+// @contact.email  rmsubekti2011@gmail.com
 
 // @license.name  Apache 2.0
 // @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
 
 // @host      localhost:3030
 // @BasePath  /v1
+
+// @securityDefinitions.apikey Bearer
+// @in header
+// @name Authorization
+// @description Type "Bearer" followed by a space and JWT token.
 func main() {
 	app := gin.Default()
 	PORT := os.Getenv("PORT")
 	GRPC := os.Getenv("GRPC")
+
+	docs.SwaggerInfo.Host = "0.0.0.0:" + PORT
 
 	if GRPC == "true" {
 		go proto.Start()
@@ -39,7 +45,7 @@ func main() {
 
 	config := cors.Config{
 		AllowOrigins:     []string{"*"},
-		AllowMethods:     []string{"POST", "GET", "DELETE"},
+		AllowMethods:     []string{"POST", "PATCH", "GET", "DELETE"},
 		AllowHeaders:     []string{"Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,

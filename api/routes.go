@@ -16,16 +16,14 @@ func Serve(app *gin.Engine) {
 	store := cookie.NewStore([]byte(os.Getenv("API_SESSION_KEY")))
 	v1.Use(sessions.Sessions("i92y", store))
 	v1.Use(middleware.Auth())
-
-	auth := v1.Group("/auth")
 	{
-		auth.POST("/login", handler.UserLogin)
-		auth.POST("/register", handler.UserRegister)
+		v1.POST("/login", handler.UserLogin)
+		v1.POST("/register", handler.UserRegister)
 	}
 
-	user := v1.Group("/:userId")
+	user := v1.Group("/:username")
 	{
-		user.GET("", handler.UserPastes)
+		user.GET("", handler.UserProfile)
 		user.GET("/paste", handler.UserPastes)
 	}
 
@@ -33,7 +31,7 @@ func Serve(app *gin.Engine) {
 	{
 		paste.GET("", handler.ListPublicPaste)
 		paste.POST("", handler.CreatePaste)
-		paste.POST("/:id", handler.EditPaste)
+		paste.PATCH("/:id", handler.EditPaste)
 		paste.GET("/:id", handler.ViewPaste)
 		paste.DELETE("/:id", handler.DeletePaste)
 	}
