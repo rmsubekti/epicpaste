@@ -46,7 +46,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          platforms: amd64,i386,arm32v7,arm64v8
+          platforms: alpine/amd64,alpine/i386,alpine/arm32v7,alpine/arm64v8
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
