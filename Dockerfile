@@ -12,7 +12,7 @@ RUN cp .env /server/
 ARG TARGETOS TARGETARCH
 RUN GOOS=$TARGETOS GOARCH=$TARGETARCH go build -o /server/epicpaste main.go
 
-FROM alpine
+FROM --platform=$BUILDPLATFORM alpine
 RUN apk --no-cache add ca-certificates
 WORKDIR /rmsubekti
 COPY --from=builder /server .
