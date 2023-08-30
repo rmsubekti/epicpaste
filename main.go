@@ -33,12 +33,7 @@ import (
 // @name Authorization
 // @description Type "Bearer" followed by a space and JWT token.
 func main() {
-	if os.Getenv("DEBUG") == "debug" {
-		gin.SetMode(gin.DebugMode)
-
-	} else {
-		gin.SetMode(gin.ReleaseMode)
-	}
+	gin.SetMode(os.Getenv("DEBUG"))
 	app := gin.Default()
 	PORT := os.Getenv("PORT")
 	GRPC := os.Getenv("GRPC")
