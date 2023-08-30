@@ -101,6 +101,26 @@ const docTemplate = `{
                     "paste"
                 ],
                 "summary": "View  list of pastes",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "show data on page n",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "limit items per page",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "filter query",
+                        "name": "q",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",

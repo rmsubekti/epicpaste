@@ -233,6 +233,19 @@ paths:
       description: |-
         Pastes can be viewed depending on visibility status of the paste
         Bearer Token is Optional
+      parameters:
+      - description: show data on page n
+        in: query
+        name: page
+        type: integer
+      - description: limit items per page
+        in: query
+        name: limit
+        type: integer
+      - description: filter query
+        in: query
+        name: q
+        type: string
       produces:
       - application/json
       responses:

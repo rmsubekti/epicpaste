@@ -202,6 +202,9 @@ func ViewPaste(c *gin.Context) {
 // @Description Bearer Token is Optional
 // @Tags         paste
 // @Produce  json
+// @Param        page    query    int  false  "show data on page n"
+// @Param        limit    query     int  false  "limit items per page"
+// @Param        q    query     string  false  "filter query"
 // @Success 200 {object} Response{data=u.Paginator{rows=model.Pastes}}
 // @Failure      400  {object}  Response
 // @Failure      401  {object}  Response
