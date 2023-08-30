@@ -5,12 +5,12 @@ on:
     #branches:
     #  - 'release'
     tags:
-      - "v*.*.*"
+      - "v1.*.*"
 
 permissions:
     contents: write
     packages: write
-    
+
 jobs:
   docker:
     runs-on: ubuntu-latest
