@@ -19,13 +19,9 @@ jobs:
         exclude:
           - goarch: "386"
             goos: darwin
-          - goarch: arm/v6
+          - goarch: arm
             goos: darwin
-          - goarch: arm/v7
-            goos: darwin
-          - goarch: arm/v6
-            goos: windows
-          - goarch: arm/v7
+          - goarch: arm
             goos: windows
     steps:
     - uses: actions/checkout@v3
