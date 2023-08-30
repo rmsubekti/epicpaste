@@ -1,1 +1,1 @@
-[] user can chgang tag and category
+[] user can change tag and category
