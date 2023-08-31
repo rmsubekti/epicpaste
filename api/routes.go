@@ -13,7 +13,7 @@ import (
 func Serve(app *gin.Engine) {
 	v1 := app.Group("/v1")
 	//cors setting
-	store := cookie.NewStore([]byte(os.Getenv("API_SESSION_KEY")))
+	store := cookie.NewStore([]byte(os.Getenv("EPIC_COOKIE_SECRET_KEY")))
 	v1.Use(sessions.Sessions("i92y", store))
 	v1.Use(middleware.Auth())
 	{

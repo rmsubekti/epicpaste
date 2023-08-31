@@ -24,8 +24,6 @@ import (
 
 // @license.name  Apache 2.0
 // @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
-
-// @host      localhost:3030
 // @BasePath  /v1
 
 // @securityDefinitions.apikey Bearer
@@ -35,10 +33,11 @@ import (
 func main() {
 	gin.SetMode(os.Getenv("DEBUG"))
 	app := gin.Default()
-	PORT := os.Getenv("PORT")
-	GRPC := os.Getenv("GRPC")
+	PORT := os.Getenv("EPIC_PORT")
+	GRPC := os.Getenv("EPIC_GRPC")
+	HOSTNAME := os.Getenv("EPIC_HOSTNAME")
 
-	docs.SwaggerInfo.Host = "0.0.0.0:" + PORT
+	docs.SwaggerInfo.Host = HOSTNAME + ":" + PORT
 
 	if GRPC == "true" {
 		go proto.Start()

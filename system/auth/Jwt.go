@@ -11,7 +11,7 @@ import (
 )
 
 func CreateLoginSignature(u *model.User, expireDay int) (string, error) {
-	mySigningKey := []byte(os.Getenv("JWT_SECRET_KEY"))
+	mySigningKey := []byte(os.Getenv("EPIC_JWT_SECRET_KEY"))
 
 	// Create the Claims
 	claims := &jwt.RegisteredClaims{
@@ -34,7 +34,7 @@ func ParseAndVerify(tokenString string) (any, error) {
 	}
 
 	key, err := jwt.ParseWithClaims(token[1], &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(os.Getenv("JWT_SECRET_KEY")), nil
+		return []byte(os.Getenv("EPIC_JWT_SECRET_KEY")), nil
 	})
 
 	if claim, ok := key.Claims.(*jwt.RegisteredClaims); ok && key.Valid {

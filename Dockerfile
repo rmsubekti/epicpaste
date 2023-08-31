@@ -9,7 +9,6 @@ RUN go install github.com/swaggo/swag/cmd/swag@latest
 RUN swag init --parseDependency  --parseInternal --parseDepth 1  -g main.go
 RUN mkdir /server
 RUN cp .env /server/
-CMD echo Compiling on $(uname -m)”
 ARG TARGETOS TARGETARCH
 RUN GOOS=$TARGETOS GOARCH=$TARGETARCH go build -o /server/epicpaste main.go
 
