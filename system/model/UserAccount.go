@@ -93,7 +93,7 @@ func (a *Account) Login() error {
 }
 
 func (a *Account) Get(username string) error {
-	return db.First(&a, "user_name = ?", username).Error
+	return db.Preload(clause.Associations).First(&a, "user_name = ?", username).Error
 }
 
 func (a *Account) Update(id string) error {

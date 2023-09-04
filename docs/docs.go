@@ -26,7 +26,7 @@ const docTemplate = `{
     "paths": {
         "/login": {
             "post": {
-                "description": "Create new user session",
+                "description": "Create new user session\nYou can use valid username or email to login",
                 "produces": [
                     "application/json"
                 ],
@@ -504,7 +504,72 @@ const docTemplate = `{
                 }
             }
         },
-        "/{userId}/paste": {
+        "/{username}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "View user profile\nBearer Token is Optional, Use bearer token to see private user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "View  user profile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "epicpaster",
+                        "description": "UserName",
+                        "name": "username",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/handlers.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.User"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/{username}/paste": {
             "get": {
                 "security": [
                     {
@@ -522,8 +587,9 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "User ID",
-                        "name": "userId",
+                        "example": "epicpaster",
+                        "description": "UserName",
+                        "name": "username",
                         "in": "path",
                         "required": true
                     }
@@ -556,70 +622,6 @@ const docTemplate = `{
                                                     }
                                                 }
                                             ]
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/{username}": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "View user profile\nBearer Token is Optional, Use bearer token to see private user",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user"
-                ],
-                "summary": "View  user profile",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "userId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/handlers.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/model.User"
                                         }
                                     }
                                 }
@@ -795,7 +797,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:3030",
+	Host:             "",
 	BasePath:         "/v1",
 	Schemes:          []string{},
 	Title:            "Epic Paste Service",

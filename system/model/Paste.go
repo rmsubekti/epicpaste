@@ -124,6 +124,6 @@ func (ps *Pastes) ListByUser(userId string, public bool, paginator *utils.Pagina
 		}
 	}
 
-	paginator.Paginate(pastes)
+	paginator.Paginate(ps)
 	return
 }

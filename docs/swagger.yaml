@@ -90,7 +90,6 @@ definitions:
       total_rows:
         type: integer
     type: object
-host: localhost:3030
 info:
   contact:
     email: rmsubekti2011@gmail.com
@@ -103,15 +102,57 @@ info:
   title: Epic Paste Service
   version: "1.0"
 paths:
-  /{userId}/paste:
+  /{username}:
+    get:
+      description: |-
+        View user profile
+        Bearer Token is Optional, Use bearer token to see private user
+      parameters:
+      - description: UserName
+        example: epicpaster
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.User'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      security:
+      - Bearer: []
+      summary: View  user profile
+      tags:
+      - user
+  /{username}/paste:
     get:
       description: |-
         Pastes can be viewed depending on logged in user
         Bearer Token is Optional, Use bearer token to see private user pastes
       parameters:
-      - description: User ID
+      - description: UserName
+        example: epicpaster
         in: path
-        name: userId
+        name: username
         required: true
         type: string
       produces:
@@ -150,49 +191,11 @@ paths:
       summary: View  list of pastes
       tags:
       - user
-  /{username}:
-    get:
-      description: |-
-        View user profile
-        Bearer Token is Optional, Use bearer token to see private user
-      parameters:
-      - description: User ID
-        in: path
-        name: userId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/handlers.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/model.User'
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.Response'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.Response'
-      security:
-      - Bearer: []
-      summary: View  user profile
-      tags:
-      - user
   /login:
     post:
-      description: Create new user session
+      description: |-
+        Create new user session
+        You can use valid username or email to login
       parameters:
       - description: ' Body payload message/rfc822'
         in: body

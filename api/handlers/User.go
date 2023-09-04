@@ -14,6 +14,7 @@ import (
 // UserLogin godoc
 // @Summary User Login
 // @Description Create new user session
+// @Description You can use valid username or email to login
 // @Tags         user
 // @Produce  json
 // @Param request body string true " Body payload message/rfc822" SchemaExample({\n\t"username": "epicpaster",\n\t"password": "5uperSecret"\n})
@@ -118,7 +119,7 @@ func UserRegister(c *gin.Context) {
 // @Description Bearer Token is Optional, Use bearer token to see private user
 // @Tags         user
 // @Produce  json
-// @Param        userId   path      string  true  "User ID"
+// @Param        username   path  string  true  "UserName" example(epicpaster)
 // @Success 200 {object} Response{data=model.User}
 // @Failure      400  {object}  Response
 // @Failure      401  {object}  Response
@@ -161,12 +162,12 @@ func UserProfile(c *gin.Context) {
 // @Description Bearer Token is Optional, Use bearer token to see private user pastes
 // @Tags         user
 // @Produce  json
-// @Param        userId   path      string  true  "User ID"
+// @Param        username   path      string  true  "UserName" example(epicpaster)
 // @Success 200 {object} Response{data=u.Paginator{rows=model.Pastes}}
 // @Failure      400  {object}  Response
 // @Failure      401  {object}  Response
 // @Failure      500  {object}  Response
-// @Router /{userId}/paste [get]
+// @Router /{username}/paste [get]
 // @Security Bearer
 func UserPastes(c *gin.Context) {
 	var paginator u.Paginator
