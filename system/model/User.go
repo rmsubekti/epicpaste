@@ -1,23 +1,29 @@
 package model
 
 type User struct {
-	ID   string `gorm:"type:varchar(60);primarykey:true;not null;unique" json:"id"`
-	Name string `gorm:"type:varchar(40)" json:"name"`
+	UserName string `gorm:"type:varchar(60);primarykey:true;not null;unique" json:"username"`
+	Name     string `gorm:"type:varchar(40)" json:"name"`
 }
 
 func (User) TableName() string {
 	return "user.user"
 }
 
-func (u *User) Get(id string) error {
-	return db.First(&u, "id = ?", id).Error
+func (u *User) Get(username string) error {
+	return db.First(&u, "user_name = ?", username).Error
 }
 
-func (u *User) Update(id string) error {
+func (u *User) Update() (err error) {
 	temp := &User{}
 	*temp = *u
-	if err := u.Get(id); err != nil {
-		return err
+
+	if err = u.Get(temp.UserName); err != nil {
+		return
 	}
-	return db.Model(&u).Updates(&temp).Error
+
+	if err = db.Model(&u).Updates(&temp).Error; err != nil {
+		return
+	}
+
+	return
 }

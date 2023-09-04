@@ -85,7 +85,6 @@ func EditPaste(c *gin.Context) {
 			Code:    http.StatusUnauthorized,
 			Message: "Please login first",
 		}
-		response.Code = http.StatusUnauthorized
 		response.Json(c)
 		return
 	}
@@ -100,7 +99,7 @@ func EditPaste(c *gin.Context) {
 	}
 
 	paste.ID = c.Param("id")
-	paste.CreatedBy = user.(model.User).ID
+	paste.CreatedBy = user.(model.User).UserName
 	if err := paste.Update(); err != nil {
 		response = Response{
 			Code:    http.StatusInternalServerError,
@@ -141,7 +140,7 @@ func DeletePaste(c *gin.Context) {
 	}
 
 	paste.ID = c.Param("id")
-	paste.CreatedBy = user.(model.User).ID
+	paste.CreatedBy = user.(model.User).UserName
 	if err := paste.Delete(); err != nil {
 		response = Response{
 			Code:    http.StatusInternalServerError,
@@ -186,7 +185,7 @@ func ViewPaste(c *gin.Context) {
 		return
 	}
 
-	if !*paste.Public || (user != nil && paste.CreatedBy != user.(model.User).ID) {
+	if !*paste.Public || (user != nil && paste.CreatedBy != user.(model.User).UserName) {
 		response.Code = http.StatusNotFound
 		response.Json(c)
 		return
@@ -197,7 +196,7 @@ func ViewPaste(c *gin.Context) {
 }
 
 // ListPublicPaste godoc
-// @Summary View  list of pastes
+// @Summary View  list of paste
 // @Description Pastes can be viewed depending on visibility status of the paste
 // @Description Bearer Token is Optional
 // @Tags         paste

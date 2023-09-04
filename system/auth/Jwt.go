@@ -17,7 +17,7 @@ func CreateLoginSignature(u *model.User, expireDay int) (string, error) {
 	claims := &jwt.RegisteredClaims{
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add((24 * time.Duration(expireDay)) * time.Hour)),
 		IssuedAt:  jwt.NewNumericDate(time.Now()),
-		ID:        u.ID,
+		ID:        u.UserName,
 		Issuer:    u.Name,
 	}
 
@@ -38,7 +38,7 @@ func ParseAndVerify(tokenString string) (any, error) {
 	})
 
 	if claim, ok := key.Claims.(*jwt.RegisteredClaims); ok && key.Valid {
-		user.ID = claim.ID
+		user.UserName = claim.ID
 		user.Name = claim.Issuer
 		// user.Name = claim.Subject
 

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"epicpaste/system/model"
 	"net/http"
 	"time"
 
@@ -15,12 +16,11 @@ type Response struct {
 }
 
 type LoginResponse struct {
-	ID         string    `json:"id"`
-	Name       string    `json:"full_name"`
-	UserName   string    `json:"user_name"`
-	Token      string    `json:"token"`
-	ExpireDays int       `json:"expire_days"`
-	SignedDate time.Time `json:"signed_date"`
+	ID         string     `json:"id"`
+	User       model.User `json:"user"`
+	Token      string     `json:"token"`
+	ExpireDays int        `json:"expire_days"`
+	SignedDate time.Time  `json:"signed_date"`
 }
 
 func (r *Response) Json(c *gin.Context) {

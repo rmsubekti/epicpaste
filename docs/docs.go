@@ -24,16 +24,166 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/login": {
-            "post": {
-                "description": "Create new user session\nYou can use valid username or email to login",
+        "/category": {
+            "get": {
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "taxonomy"
                 ],
-                "summary": "User Login",
+                "summary": "View  all categories",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/handlers.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.Category"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/change-email": {
+            "post": {
+                "description": "Need to login first",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "account"
+                ],
+                "summary": "Change Account email",
+                "parameters": [
+                    {
+                        "description": "Body payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ChangePassword"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/change-password": {
+            "patch": {
+                "description": "Need to login first",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "account"
+                ],
+                "summary": "Change Account password",
+                "parameters": [
+                    {
+                        "description": "Body payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ChangePassword"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "description": "Create new session\nuser can fill the username field with their username or email",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "account"
+                ],
+                "summary": "Login",
                 "parameters": [
                     {
                         "description": " Body payload message/rfc822",
@@ -86,6 +236,44 @@ const docTemplate = `{
                 }
             }
         },
+        "/logout": {
+            "get": {
+                "description": "This only work with cookie.\nFor JWT Token, you must set token from the respose to the frontend.\nNeed to login first",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "account"
+                ],
+                "summary": "User Account Logout",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/paste": {
             "get": {
                 "security": [
@@ -100,7 +288,7 @@ const docTemplate = `{
                 "tags": [
                     "paste"
                 ],
-                "summary": "View  list of pastes",
+                "summary": "View  list of paste",
                 "parameters": [
                     {
                         "type": "integer",
@@ -445,14 +633,14 @@ const docTemplate = `{
         },
         "/register": {
             "post": {
-                "description": "Register a new user",
+                "description": "Usename cannot be changed after account is created",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "account"
                 ],
-                "summary": "Register a new user",
+                "summary": "Register a new account",
                 "parameters": [
                     {
                         "description": "Body payload",
@@ -477,6 +665,58 @@ const docTemplate = `{
                                     "properties": {
                                         "data": {
                                             "type": "boolean"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/tag": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "taxonomy"
+                ],
+                "summary": "View  all tags",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/handlers.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.Tag"
+                                            }
                                         }
                                     }
                                 }
@@ -567,6 +807,79 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Username cannot be changed",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Edit User Profile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "epicpaster",
+                        "description": "UserName",
+                        "name": "username",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": " Body payload message/rfc822",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "{\n\t\"name\": \"Epic Paster\"\n}"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/handlers.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.User"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    }
+                }
             }
         },
         "/{username}/paste": {
@@ -583,7 +896,7 @@ const docTemplate = `{
                 "tags": [
                     "user"
                 ],
-                "summary": "View  list of pastes",
+                "summary": "View  list of paste",
                 "parameters": [
                     {
                         "type": "string",
@@ -657,9 +970,6 @@ const docTemplate = `{
                 "expire_days": {
                     "type": "integer"
                 },
-                "full_name": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "string"
                 },
@@ -669,8 +979,8 @@ const docTemplate = `{
                 "token": {
                     "type": "string"
                 },
-                "user_name": {
-                    "type": "string"
+                "user": {
+                    "$ref": "#/definitions/model.User"
                 }
             }
         },
@@ -707,6 +1017,20 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.ChangePassword": {
+            "type": "object",
+            "properties": {
+                "confirm": {
+                    "type": "string"
+                },
+                "current": {
+                    "type": "string"
+                },
+                "new": {
                     "type": "string"
                 }
             }
@@ -751,10 +1075,10 @@ const docTemplate = `{
         "model.User": {
             "type": "object",
             "properties": {
-                "id": {
+                "name": {
                     "type": "string"
                 },
-                "name": {
+                "username": {
                     "type": "string"
                 }
             }
@@ -801,7 +1125,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/v1",
 	Schemes:          []string{},
 	Title:            "Epic Paste Service",
-	Description:      "A snippet management service API in Go using Gin framework.",
+	Description:      "A snippet management service API in Go using Gin framework.\nLogin to create token.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

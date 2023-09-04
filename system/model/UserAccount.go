@@ -3,6 +3,7 @@ package model
 import (
 	"epicpaste/system/utils"
 	"errors"
+	"fmt"
 	"regexp"
 
 	"github.com/google/uuid"
@@ -20,7 +21,7 @@ type Account struct {
 	Email string `json:"email" gorm:"type:varchar(40);not null;unique"`
 	//any string character
 	Password string         `json:"password" gorm:"type:char(200);not null"`
-	User     User           `json:"user" gorm:"foreignKey:ID;references:UserName" swaggerignore:"true"`
+	User     User           `json:"user" gorm:"foreignKey:UserName;references:UserName" swaggerignore:"true"`
 	Setting  AccountSetting `json:"setting" gorm:"foreignKey:ID;references:ID" swaggerignore:"true"`
 }
 
@@ -31,6 +32,32 @@ var (
 
 func (Account) TableName() string {
 	return "user.account"
+}
+
+type ChangePassword struct {
+	Current string `json:"current"`
+	New     string `json:"new"`
+	Confirm string `json:"confirm"`
+}
+
+func (c *ChangePassword) validate() (err error) {
+	if c.Current == "" {
+		return fmt.Errorf("current password cannot be empty")
+	}
+	if c.New == "" {
+		return fmt.Errorf("new password cannot be empty")
+	}
+	if c.Confirm == "" {
+		return fmt.Errorf("confirm password cannot be empty")
+	}
+	if c.Current == c.New {
+		return fmt.Errorf("current password is already used")
+	}
+	if c.New != c.Confirm {
+		return fmt.Errorf("confirm password should be equal to new password")
+	}
+
+	return nil
 }
 
 func (a *Account) Register() (err error) {
@@ -60,8 +87,8 @@ func (a *Account) Register() (err error) {
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(a.Password), bcrypt.DefaultCost)
 	a.Password = string(hashedPassword)
 	a.User = User{
-		ID:   a.UserName,
-		Name: utils.GenerateNewName(),
+		UserName: a.UserName,
+		Name:     utils.GenerateNewName(),
 	}
 	a.Setting = AccountSetting{
 		ID:        a.ID,
@@ -96,9 +123,10 @@ func (a *Account) Get(username string) error {
 	return db.Preload(clause.Associations).First(&a, "user_name = ?", username).Error
 }
 
-func (a *Account) Update(id string) error {
+func (a *Account) Update(username string) error {
 	temp := &Account{}
 	*temp = *a
+	temp.Password = ""
 
 	if a.Email != "" && !mailRegex.MatchString(a.Email) {
 		return errors.New("your email is not valid")
@@ -108,8 +136,31 @@ func (a *Account) Update(id string) error {
 		return errors.New("username should be using alphanumeric character")
 	}
 
-	if err := a.Get(id); err != nil {
+	if err := a.Get(username); err != nil {
 		return err
 	}
 	return db.Model(&a).Updates(&temp).Error
+}
+
+func (a *Account) ChangePassword(password ChangePassword) (err error) {
+	if err = password.validate(); err != nil {
+		return
+	}
+
+	if err = a.Get(a.UserName); err != nil {
+		return
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(a.Password), []byte(password.New)); err != nil {
+		return errors.New("wrong current password")
+	}
+
+	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(password.New), bcrypt.DefaultCost)
+	password.New = string(hashedPassword)
+
+	if err = db.Model(&a).Updates(&Account{Password: password.New}).Error; err != nil {
+		return
+	}
+
+	return
 }

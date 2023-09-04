@@ -104,9 +104,9 @@ func (ps *Pastes) List(paginator *utils.Paginator) (err error) {
 	return
 }
 
-func (ps *Pastes) ListByUser(userId string, public bool, paginator *utils.Paginator) (err error) {
-	count := db.Model(&Paste{}).Where("created_by = ?", userId)
-	pastes := db.Scopes(paginator.Scopes()).Preload(clause.Associations).Where("created_by = ?", userId)
+func (ps *Pastes) ListByUser(username string, public bool, paginator *utils.Paginator) (err error) {
+	count := db.Model(&Paste{}).Where("created_by = ?", username)
+	pastes := db.Scopes(paginator.Scopes()).Preload(clause.Associations).Where("created_by = ?", username)
 
 	if public {
 		if err = paginator.SetCount(count.Where("public = ?", public)); err != nil {

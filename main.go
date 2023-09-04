@@ -17,6 +17,7 @@ import (
 // @title           Epic Paste Service
 // @version         1.0
 // @description     A snippet management service API in Go using Gin framework.
+// @description     Login to create token.
 
 // @contact.name   Rahmat Subekti
 // @contact.url    https://bekti.net/social

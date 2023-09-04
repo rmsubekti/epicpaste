@@ -17,13 +17,17 @@ func Serve(app *gin.Engine) {
 	v1.Use(sessions.Sessions("i92y", store))
 	v1.Use(middleware.Auth())
 	{
-		v1.POST("/login", handler.UserLogin)
-		v1.POST("/register", handler.UserRegister)
+		v1.POST("/login", handler.AccountLogin)
+		v1.POST("/register", handler.AccountRegister)
+		v1.PATCH("/change-password", handler.PasswordChange)
+		v1.POST("/change-email", handler.ChangeEmail)
+		v1.GET("/logout", handler.LogOut)
 	}
 
 	user := v1.Group("/:username")
 	{
 		user.GET("", handler.UserProfile)
+		user.PATCH("", handler.EditProfile)
 		user.GET("/paste", handler.UserPastes)
 	}
 
@@ -34,6 +38,16 @@ func Serve(app *gin.Engine) {
 		paste.PATCH("/:id", handler.EditPaste)
 		paste.GET("/:id", handler.ViewPaste)
 		paste.DELETE("/:id", handler.DeletePaste)
+	}
+
+	category := v1.Group("/category")
+	{
+		category.GET("", handler.ListCategory)
+	}
+
+	tag := v1.Group("/tag")
+	{
+		tag.GET("", handler.ListTags)
 	}
 
 }
