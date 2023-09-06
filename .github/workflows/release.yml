@@ -58,4 +58,4 @@ jobs:
     - name: Upload 
       uses: Difegue/action-megacmd@master
       with:
-        args: put ${{ env.UPLOAD_FILE }} /Releases/EpicPaste/
+        args: put -c ${{ env.UPLOAD_FILE }} /Releases/EpicPaste/
