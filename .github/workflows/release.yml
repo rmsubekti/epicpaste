@@ -49,6 +49,13 @@ jobs:
         goversion: "https://dl.google.com/go/go1.20.7.linux-amd64.tar.gz"
         binary_name: "epicpaste"
         extra_files: LICENSE .env
-    - run: |
+    - id: target
+      run: |
         ARTIFACT=$(find  . -type d -iname "build-artifacts*")
-        ls $(find  $ARTIFACT -type d -iname "*tar.gz")
+        echo "file=$(find  $ARTIFACT -type f -iname "*tar.gz")" >> $GITHUB_OUTPUT 
+    - name: Upload Artifacts TO Google Drive
+      uses: Jumbo810/Upload_Github_Artifacts_TO_GDrive@v1.1.1
+      with:
+        target: ${{ target.file }}
+        credentials: ${{ secrets.GDRIVE }}
+        parent_folder_id: 1Y4En4SCZ7Tkkf1qD8LDfmwwWOZGAtE8a
