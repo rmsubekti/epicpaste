@@ -59,3 +59,4 @@ jobs:
         target: ${{ env.UPLOAD_FILE }}
         credentials: ${{ secrets.GDRIVE }}
         parent_folder_id: 1Y4En4SCZ7Tkkf1qD8LDfmwwWOZGAtE8a
+        owner: ${{ secrets.GDRIVE_OWNER }}
