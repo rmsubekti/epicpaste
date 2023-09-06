@@ -50,11 +50,3 @@ jobs:
         binary_name: "epicpaste"
         extra_files: LICENSE .env
     - run: ls -al build-artifacts*
-    - uses: a7ul/tar-action@v1.1.0
-      with:
-        command: c
-        files: |
-          epicpaste
-          .env
-          LICENSE
-        outPath: epicpaste.tar.gz
