@@ -52,7 +52,9 @@ jobs:
     - id: target
       run: |
         ARTIFACT=$(find  . -type d -iname "build-artifacts*")
-        echo "FILE=$(find $ARTIFACT -type f -iname "*tar.gz")" >> $GITHUB_ENV
+        FILE_TO_UPLOAD=$(find $ARTIFACT -type f -iname "*.tar.gz")
+        [ -z "$FILE_TO_UPLOAD" ] && FILE_TO_UPLOAD=$(find $ARTIFACT -type f -iname "*.zip")
+        echo "FILE=$FILE_TO_UPLOAD" >> $GITHUB_ENV
         echo "USERNAME=${{ secrets.MEGA_USERNAME }}" >> $GITHUB_ENV
         echo "PASSWORD=${{ secrets.MEGA_PASSWORD }}" >> $GITHUB_ENV
     - name: MEGA Upload 
