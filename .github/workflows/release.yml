@@ -55,9 +55,10 @@ jobs:
         FILE_TO_UPLOAD=$(find $ARTIFACT -type f -iname "*.tar.gz")
         [ -z "$FILE_TO_UPLOAD" ] && FILE_TO_UPLOAD=$(find $ARTIFACT -type f -iname "*.zip")
         echo "FILE=$FILE_TO_UPLOAD" >> $GITHUB_ENV
+        echo "REF_NAME=$GITHUB_REF_NAME" >> $GITHUB_ENV
         echo "USERNAME=${{ secrets.MEGA_USERNAME }}" >> $GITHUB_ENV
         echo "PASSWORD=${{ secrets.MEGA_PASSWORD }}" >> $GITHUB_ENV
-    - name: MEGA Upload 
+    - name: MEGA Upload     
       uses: Difegue/action-megacmd@master
       with:
-        args: put -c ${{env.FILE}} EpicPaste/${{vars.GITHUB_REF_NAME}}/
+        args: put -c ${{env.FILE}} EpicPaste/${{env.REF_NAME}}/
