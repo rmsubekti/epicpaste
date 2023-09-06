@@ -52,10 +52,10 @@ jobs:
     - id: target
       run: |
         ARTIFACT=$(find  . -type d -iname "build-artifacts*")
+        echo "FILE=$(find $ARTIFACT -type f -iname "*tar.gz")" >> $GITHUB_ENV
         echo "USERNAME=${{ secrets.MEGA_USERNAME }}" >> $GITHUB_ENV
         echo "PASSWORD=${{ secrets.MEGA_PASSWORD }}" >> $GITHUB_ENV
-        echo "UPLOAD_FILE=$(find $ARTIFACT -type f -iname "*tar.gz")" >> $GITHUB_ENV
-    - name: Upload 
+    - name: MEGA Upload 
       uses: Difegue/action-megacmd@master
       with:
-        args: put ${{ env.UPLOAD_FILE }} Releases/EpicPaste/
+        args: put ${{env.FILE}} Releases/EpicPaste/
