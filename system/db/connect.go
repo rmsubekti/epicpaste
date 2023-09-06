@@ -1,6 +1,7 @@
-package config
+package db
 
 import (
+	"embed"
 	"fmt"
 	"log"
 	"os"
@@ -13,7 +14,22 @@ import (
 	"gorm.io/gorm/schema"
 )
 
-func GetDB() *gorm.DB {
+//go:embed sql
+var sqls embed.FS
+
+type sqlEmbed struct {
+	files embed.FS
+}
+
+func (e *sqlEmbed) ExecFile(fileName string, db *gorm.DB) {
+	if sql, err := e.files.ReadFile("sql/" + fileName + ".sql"); err == nil {
+		db.Exec(string(sql))
+	} else {
+		log.Fatal(err)
+	}
+}
+
+func Connect() (*gorm.DB, *sqlEmbed) {
 	var db *gorm.DB
 	var err error
 	if e := godotenv.Load(); e != nil {
@@ -27,10 +43,12 @@ func GetDB() *gorm.DB {
 	host := os.Getenv("POSTGRES_HOSTNAME")
 	dbport := os.Getenv("POSTGRES_PORT")
 	sslMode := os.Getenv("POSTGRES_SSLMODE")
-	logLevel := logger.Default.LogMode(logger.Silent)
-	if os.Getenv("DEBUG") == "debug" {
-		logLevel = logger.Default.LogMode(logger.Info)
+
+	logLevel := logger.Silent
+	if os.Getenv("EPIC_DEBUG") == "debug" {
+		logLevel = logger.Info
 	}
+
 	//database uri
 	dbUri := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s ", host, user, password, dbName, dbport, sslMode)
 
@@ -42,7 +60,7 @@ func GetDB() *gorm.DB {
 				NamingStrategy: schema.NamingStrategy{
 					SingularTable: true,
 				},
-				Logger: logLevel,
+				Logger: logger.Default.LogMode(logLevel),
 			},
 		)
 		if err == nil {
@@ -56,5 +74,5 @@ func GetDB() *gorm.DB {
 		log.Fatalf("No database found : %s", err)
 	}
 
-	return db
+	return db, &sqlEmbed{files: sqls}
 }

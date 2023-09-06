@@ -1,7 +1,7 @@
 [x] user can change paste's tag and category
-[ ] list Paste By catogory
-[ ] list Paste By tag
-[ ] Change Email and password
+[x] list Paste By catogory
+[x] list Paste By tag
+[x] Change Password
+[ ] Change Email
 [ ] Forgot Password
 [ ] User Logout
-[ ] Fix swagger endpoints

@@ -43,11 +43,13 @@ func Serve(app *gin.Engine) {
 	category := v1.Group("/category")
 	{
 		category.GET("", handler.ListCategory)
+		category.GET("/:category", handler.ListPasteByCategory)
 	}
 
 	tag := v1.Group("/tag")
 	{
 		tag.GET("", handler.ListTags)
+		tag.GET("/:tag", handler.ListPasteByTag)
 	}
 
 }

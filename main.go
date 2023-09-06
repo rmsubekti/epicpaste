@@ -32,7 +32,13 @@ import (
 // @name Authorization
 // @description Type "Bearer" followed by a space and JWT token.
 func main() {
-	gin.SetMode(os.Getenv("DEBUG"))
+	debug := os.Getenv("EPIC_DEBUG")
+	if len(debug) > 2 {
+		gin.SetMode(debug)
+	} else {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	app := gin.Default()
 	PORT := os.Getenv("EPIC_PORT")
 	GRPC := os.Getenv("EPIC_GRPC")

@@ -1,8 +1,7 @@
 package model
 
 import (
-	"epicpaste/system/config"
-	"epicpaste/system/sql"
+	database "epicpaste/system/db"
 
 	"gorm.io/gorm"
 )
@@ -10,8 +9,8 @@ import (
 var db *gorm.DB
 
 func init() {
-	db = config.GetDB()
-	sql := sql.Populate()
+	conn, sql := database.Connect()
+	db = conn
 
 	// init extensions, schemas, and functions
 	sql.ExecFile("before_create_table", db)

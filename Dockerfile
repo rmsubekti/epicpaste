@@ -16,4 +16,5 @@ FROM --platform=$BUILDPLATFORM alpine
 RUN apk --no-cache add ca-certificates
 WORKDIR /rmsubekti
 COPY --from=builder /server .
+RUN sed '/EPIC_DEBUG/d' .env
 ENTRYPOINT [ "/rmsubekti/epicpaste" ]

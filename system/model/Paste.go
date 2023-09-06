@@ -127,3 +127,44 @@ func (ps *Pastes) ListByUser(username string, public bool, paginator *utils.Pagi
 	paginator.Paginate(ps)
 	return
 }
+
+func (ps *Pastes) ListByCategory(category string, paginator *utils.Paginator) (err error) {
+	count := db.Model(&Paste{}).InnerJoins("Category", db.Where(&Category{Name: category})).Where("public = ?", true)
+	pastes := db.Scopes(paginator.Scopes()).InnerJoins("Category", db.Where(&Category{Name: category})).Preload(clause.Associations).Where("public = ?", true)
+	if err = paginator.SetCount(count); err != nil {
+		return
+	}
+	if err = pastes.Find(&ps).Error; err != nil {
+		return
+	}
+	paginator.Paginate(ps)
+	return
+}
+
+func (ps *Pastes) ListByTag(tag string, paginator *utils.Paginator) (err error) {
+	count := db.Model(&Paste{}).
+		Joins("JOIN (?) AS matched ON paste_id = paste.id",
+			db.Select("paste_id").
+				Table(`"master"."paste_tag" qt`).
+				Joins(`JOIN "master"."tag" t ON qt.tag_id = t.id`).
+				Where("t.name = ?", tag).
+				Group("paste_id"),
+		).Where("public = ?", true)
+	pastes := db.Scopes(paginator.Scopes()).
+		Joins("JOIN (?) AS matched ON paste_id = paste.id",
+			db.Select("paste_id").
+				Table(`"master"."paste_tag" qt`).
+				Joins(`JOIN "master"."tag" t ON qt.tag_id = t.id`).
+				Where("t.name = ?", tag).
+				Group("paste_id"),
+		).Preload(clause.Associations).Where("public = ?", true)
+
+	if err = paginator.SetCount(count); err != nil {
+		return
+	}
+	if err = pastes.Find(&ps).Error; err != nil {
+		return
+	}
+	paginator.Paginate(ps)
+	return
+}
