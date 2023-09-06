@@ -60,4 +60,4 @@ jobs:
     - name: MEGA Upload 
       uses: Difegue/action-megacmd@master
       with:
-        args: put ${{env.FILE}} Releases/EpicPaste/
+        args: put -c ${{env.FILE}} Releases/EpicPaste/
