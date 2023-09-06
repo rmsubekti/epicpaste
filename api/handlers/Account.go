@@ -56,6 +56,7 @@ func AccountLogin(c *gin.Context) {
 	}
 	session := sessions.Default(c)
 	session.Set("token", "Bearer "+token)
+	session.Options(sessions.Options{MaxAge: (24 * 60 * 60 * sessionDays)})
 	session.Save()
 
 	response = Response{
@@ -169,7 +170,7 @@ func PasswordChange(c *gin.Context) {
 // @Summary Change Account email
 // @Tags         account
 // @Produce  json
-// @Param request body model.ChangePassword true "Body payload"
+// @Param request body Emailpayload true "Body payload"
 // @Description Need to login first
 // @Success 200 {object} Response
 // @Failure      400  {object}  Response
@@ -181,6 +182,8 @@ func ChangeEmail(c *gin.Context) {
 		user     any
 		ok       bool
 		response Response
+		account  model.Account
+		email    Emailpayload
 	)
 
 	if user, ok = c.Get("user"); !ok || user == nil {
@@ -192,9 +195,36 @@ func ChangeEmail(c *gin.Context) {
 		return
 	}
 
+	if err := c.ShouldBindJSON(&email); err != nil {
+		response = Response{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		}
+		response.Json(c)
+		return
+	}
+
+	if err := account.Get(user.(model.User).UserName); err != nil {
+		response = Response{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		}
+		response.Json(c)
+		return
+	}
+	if err := account.ChangeEmail(email.Email); err != nil {
+		response = Response{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		}
+		response.Json(c)
+		return
+	}
+
 	response = Response{
 		Code:    http.StatusOK,
-		Message: "Unimplemented",
+		Message: "email changed",
+		Data:    email,
 	}
 	response.Json(c)
 }
@@ -213,9 +243,10 @@ func ChangeEmail(c *gin.Context) {
 // @Router /logout [get]
 func LogOut(c *gin.Context) {
 	var (
-		user     any
-		ok       bool
-		response Response
+		user        any
+		ok          bool
+		response    Response
+		sessionDays int = -1
 	)
 
 	if user, ok = c.Get("user"); !ok || user == nil {
@@ -227,9 +258,23 @@ func LogOut(c *gin.Context) {
 		return
 	}
 
+	token, err := auth.CreateLoginSignature(user.(*model.User), sessionDays)
+	if err != nil {
+		response = Response{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		}
+		response.Json(c)
+		return
+	}
+	session := sessions.Default(c)
+	session.Set("token", "Bearer "+token)
+	session.Options(sessions.Options{MaxAge: (24 * 60 * 60 * sessionDays)})
+	session.Save()
 	response = Response{
 		Code:    http.StatusOK,
-		Message: "Unimplemented",
+		Message: "Logged out",
+		Data:    token,
 	}
 	response.Json(c)
 }

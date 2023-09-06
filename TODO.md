@@ -2,6 +2,6 @@
 [x] list Paste By catogory
 [x] list Paste By tag
 [x] Change Password
-[ ] Change Email
+[x] Change Email
 [ ] Forgot Password
-[ ] User Logout
+[x] User Logout

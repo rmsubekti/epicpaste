@@ -23,6 +23,10 @@ type LoginResponse struct {
 	SignedDate time.Time  `json:"signed_date"`
 }
 
+type Emailpayload struct {
+	Email string
+}
+
 func (r *Response) Json(c *gin.Context) {
 	if r.Status == "" {
 		r.Status = http.StatusText(r.Code)

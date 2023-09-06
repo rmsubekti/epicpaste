@@ -62,11 +62,11 @@ func (c *ChangePassword) validate() (err error) {
 
 func (a *Account) Register() (err error) {
 	if !mailRegex.MatchString(a.Email) {
-		return errors.New("format email tidak sesuai")
+		return errors.New("email not valid")
 	}
 
 	if !allNumRegex.MatchString(a.UserName) {
-		return errors.New("username hanya berisi karakter alphanumeric")
+		return errors.New("username should only contain alphanumeric")
 	}
 
 	account := &Account{}
@@ -162,5 +162,24 @@ func (a *Account) ChangePassword(password ChangePassword) (err error) {
 		return
 	}
 
+	return
+}
+
+func (a *Account) ChangeEmail(mail string) (err error) {
+
+	if !mailRegex.MatchString(a.Email) {
+		return errors.New("new email is not valid")
+	}
+
+	if a.Email == mail {
+		return errors.New("new email is currently used")
+	}
+
+	if result := db.First(&Account{}, "email=?", mail); result.RowsAffected > 0 {
+		return errors.New("new email is already registered")
+	}
+	if err = db.Model(&a).Updates(&Account{Email: mail}).Error; err != nil {
+		return
+	}
 	return
 }
