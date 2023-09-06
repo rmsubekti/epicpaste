@@ -52,9 +52,7 @@ jobs:
     - id: target
       run: |
         ARTIFACT=$(find  . -type d -iname "build-artifacts*")
-        FILE=$(find  $ARTIFACT -type f -iname "*tar.gz")
-        cp -r $FILE ./
-        echo "UPLOAD_FILE=$(find . -type f -iname "*tar.gz")" >> $GITHUB_ENV 
+        echo "UPLOAD_FILE=$(find $ARTIFACT -type f -iname "*tar.gz")" >> $GITHUB_ENV 
     - name: Upload Artifacts TO Google Drive
       uses: Jumbo810/Upload_Github_Artifacts_TO_GDrive@v1.1.1
       with:
