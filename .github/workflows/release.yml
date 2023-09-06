@@ -54,8 +54,8 @@ jobs:
         ARTIFACT=$(find  . -type d -iname "build-artifacts*")
         echo "UPLOAD_FILE=$(find $ARTIFACT -type f -iname "*tar.gz")" >> $GITHUB_ENV 
     - name: Upload Artifacts TO Google Drive
-      uses: Jumbo810/Upload_Github_Artifacts_TO_GDrive@v1.1.1
+      uses: Jodebu/upload-to-drive@master
       with:
         target: ${{ env.UPLOAD_FILE }}
         credentials: ${{ secrets.GDRIVE }}
-        parent_folder_id: 1Y4En4SCZ7Tkkf1qD8LDfmwwWOZGAtE8a
+        folder: 1Y4En4SCZ7Tkkf1qD8LDfmwwWOZGAtE8a
