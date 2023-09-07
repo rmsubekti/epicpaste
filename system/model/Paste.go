@@ -14,7 +14,8 @@ type Paste struct {
 	Title      string    `gorm:"type:varchar(125);not null" json:"title"`
 	Content    string    `gorm:"type:text;not null" json:"content"`
 	Public     *bool     `json:"public"`
-	Languange  string    `json:"language"`
+	Syntax     *Syntax   `gorm:"foreignKey:SyntaxID" json:"syntax,omitempty"`
+	SyntaxID   *uint     `json:"-"`
 	Tags       *Tags     `gorm:"Many2Many:master.paste_tag;FOREIGNKEY:ID;ASSOCIATION_FOREIGNKEY:ID;" json:"tag,omitempty"`
 	Category   *Category `gorm:"foreignKey:CategoryId" json:"category,omitempty"`
 	CategoryId *uint     `json:"-"`
@@ -131,6 +132,19 @@ func (ps *Pastes) ListByUser(username string, public bool, paginator *utils.Pagi
 func (ps *Pastes) ListByCategory(category string, paginator *utils.Paginator) (err error) {
 	count := db.Model(&Paste{}).InnerJoins("Category", db.Where(&Category{Name: category})).Where("public = ?", true)
 	pastes := db.Scopes(paginator.Scopes()).InnerJoins("Category", db.Where(&Category{Name: category})).Preload(clause.Associations).Where("public = ?", true)
+	if err = paginator.SetCount(count); err != nil {
+		return
+	}
+	if err = pastes.Find(&ps).Error; err != nil {
+		return
+	}
+	paginator.Paginate(ps)
+	return
+}
+
+func (ps *Pastes) ListBySyntax(syntax string, paginator *utils.Paginator) (err error) {
+	count := db.Model(&Paste{}).InnerJoins("Syntax", db.Where(&Syntax{Name: syntax})).Where("public = ?", true)
+	pastes := db.Scopes(paginator.Scopes()).InnerJoins("Syntax", db.Where(&Syntax{Name: syntax})).Preload(clause.Associations).Where("public = ?", true)
 	if err = paginator.SetCount(count); err != nil {
 		return
 	}

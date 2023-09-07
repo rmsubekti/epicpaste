@@ -21,6 +21,7 @@ func init() {
 		&User{},
 		&Tag{},
 		&Category{},
+		&Syntax{},
 		&Paste{},
 	)
 

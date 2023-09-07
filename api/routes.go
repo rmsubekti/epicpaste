@@ -46,6 +46,12 @@ func Serve(app *gin.Engine) {
 		category.GET("/:category", handler.ListPasteByCategory)
 	}
 
+	syntax := v1.Group("/syntax")
+	{
+		syntax.GET("", handler.ListSyntax)
+		syntax.GET("/:syntax", handler.ListPasteBySyntax)
+	}
+
 	tag := v1.Group("/tag")
 	{
 		tag.GET("", handler.ListTags)
