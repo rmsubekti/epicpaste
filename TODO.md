@@ -5,3 +5,4 @@
 [x] Change Email
 [ ] Forgot Password
 [x] User Logout
+[ ] default .env

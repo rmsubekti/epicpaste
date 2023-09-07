@@ -2,7 +2,7 @@ package model
 
 type Tag struct {
 	ID   uint   `swaggerignore:"true"`
-	Name string `gorm:"type:varchar(30)"`
+	Name string `gorm:"type:varchar(60)"`
 }
 
 type Tags []Tag

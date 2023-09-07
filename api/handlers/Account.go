@@ -123,6 +123,7 @@ func AccountRegister(c *gin.Context) {
 // @Failure      401  {object}  Response
 // @Failure      500  {object}  Response
 // @Router /change-password [patch]
+// @Security Bearer
 func PasswordChange(c *gin.Context) {
 	var (
 		user     any
@@ -176,7 +177,8 @@ func PasswordChange(c *gin.Context) {
 // @Failure      400  {object}  Response
 // @Failure      401  {object}  Response
 // @Failure      500  {object}  Response
-// @Router /change-email [post]
+// @Router /change-email [patch]
+// @Security Bearer
 func ChangeEmail(c *gin.Context) {
 	var (
 		user     any
@@ -241,6 +243,7 @@ func ChangeEmail(c *gin.Context) {
 // @Failure      401  {object}  Response
 // @Failure      500  {object}  Response
 // @Router /logout [get]
+// @Security Bearer
 func LogOut(c *gin.Context) {
 	var (
 		user        any

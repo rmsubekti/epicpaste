@@ -2,7 +2,7 @@ package model
 
 type Category struct {
 	ID   uint   `swaggerignore:"true"`
-	Name string `gorm:"type:varchar(40)"`
+	Name string `gorm:"type:varchar(60)"`
 }
 
 type Categories []Category

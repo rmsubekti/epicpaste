@@ -1,8 +1,8 @@
 package model
 
 type Syntax struct {
-	ID   uint
-	Name string
+	ID   uint   `swaggerignore:"true"`
+	Name string `gorm:"type:varchar(60)"`
 }
 
 type Syntaxs []Syntax

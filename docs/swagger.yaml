@@ -1,5 +1,10 @@
 basePath: /v1
 definitions:
+  handlers.Emailpayload:
+    properties:
+      email:
+        type: string
+    type: object
   handlers.LoginResponse:
     properties:
       expire_days:
@@ -58,15 +63,20 @@ definitions:
         type: string
       id:
         type: string
-      language:
-        type: string
       public:
         type: boolean
+      syntax:
+        $ref: '#/definitions/model.Syntax'
       tag:
         items:
           $ref: '#/definitions/model.Tag'
         type: array
       title:
+        type: string
+    type: object
+  model.Syntax:
+    properties:
+      name:
         type: string
     type: object
   model.Tag:
@@ -332,7 +342,7 @@ paths:
       tags:
       - taxonomy
   /change-email:
-    post:
+    patch:
       description: Need to login first
       parameters:
       - description: Body payload
@@ -340,7 +350,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/model.ChangePassword'
+          $ref: '#/definitions/handlers.Emailpayload'
       produces:
       - application/json
       responses:
@@ -360,6 +370,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/handlers.Response'
+      security:
+      - Bearer: []
       summary: Change Account email
       tags:
       - account
@@ -392,6 +404,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/handlers.Response'
+      security:
+      - Bearer: []
       summary: Change Account password
       tags:
       - account
@@ -460,6 +474,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/handlers.Response'
+      security:
+      - Bearer: []
       summary: User Account Logout
       tags:
       - account
@@ -716,6 +732,92 @@ paths:
       summary: Register a new account
       tags:
       - account
+  /syntax:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Syntax'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: View  all syntaxs
+      tags:
+      - taxonomy
+  /syntax/{syntax}:
+    get:
+      description: Pastes can be viewed depending on visibility status of the paste
+      parameters:
+      - description: show data on page n
+        in: query
+        name: page
+        type: integer
+      - description: limit items per page
+        in: query
+        name: limit
+        type: integer
+      - description: filter query
+        in: query
+        name: q
+        type: string
+      - description: Syntax name
+        in: path
+        name: syntax
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.Response'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/utils.Paginator'
+                  - properties:
+                      rows:
+                        items:
+                          $ref: '#/definitions/model.Paste'
+                        type: array
+                    type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: Paste By Syntax
+      tags:
+      - taxonomy
   /tag:
     get:
       produces:

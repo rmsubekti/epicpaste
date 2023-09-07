@@ -2,6 +2,7 @@ package db
 
 import (
 	"embed"
+	"epicpaste/system/helper"
 	"fmt"
 	"log"
 	"os"
@@ -29,20 +30,11 @@ func (e *sqlEmbed) ExecFile(fileName string, db *gorm.DB) {
 	}
 }
 
-func Connect() (*gorm.DB, *sqlEmbed) {
-	var db *gorm.DB
+func Connect() (db *gorm.DB, embed *sqlEmbed) {
 	var err error
 	if e := godotenv.Load(); e != nil {
 		log.Println(e)
 	}
-
-	//database info
-	user := os.Getenv("POSTGRES_USER")
-	password := os.Getenv("POSTGRES_PASSWORD")
-	dbName := os.Getenv("POSTGRES_DB")
-	host := os.Getenv("POSTGRES_HOSTNAME")
-	dbport := os.Getenv("POSTGRES_PORT")
-	sslMode := os.Getenv("POSTGRES_SSLMODE")
 
 	logLevel := logger.Silent
 	if os.Getenv("EPIC_DEBUG") == "debug" {
@@ -50,7 +42,14 @@ func Connect() (*gorm.DB, *sqlEmbed) {
 	}
 
 	//database uri
-	dbUri := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s ", host, user, password, dbName, dbport, sslMode)
+	dbUri := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s ",
+		helper.GetEnv("POSTGRES_HOSTNAME", "localhost"),
+		helper.GetEnv("POSTGRES_USER", "postgres"),
+		helper.GetEnv("POSTGRES_PASSWORD", "EpicPaste*password*"),
+		helper.GetEnv("POSTGRES_DB", "epicpaste"),
+		helper.GetEnv("POSTGRES_PORT", "5432"),
+		helper.GetEnv("POSTGRES_SSLMODE", "disable"),
+	)
 
 	//connect to database
 	for i := 0; i < 5; i++ {

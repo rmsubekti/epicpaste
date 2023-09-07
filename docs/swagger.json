@@ -161,7 +161,12 @@
             }
         },
         "/change-email": {
-            "post": {
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Need to login first",
                 "produces": [
                     "application/json"
@@ -177,7 +182,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.ChangePassword"
+                            "$ref": "#/definitions/handlers.Emailpayload"
                         }
                     }
                 ],
@@ -211,6 +216,11 @@
         },
         "/change-password": {
             "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Need to login first",
                 "produces": [
                     "application/json"
@@ -322,6 +332,11 @@
         },
         "/logout": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "This only work with cookie.\nFor JWT Token, you must set token from the respose to the frontend.\nNeed to login first",
                 "produces": [
                     "application/json"
@@ -776,6 +791,150 @@
                 }
             }
         },
+        "/syntax": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "taxonomy"
+                ],
+                "summary": "View  all syntaxs",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/handlers.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.Syntax"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/syntax/{syntax}": {
+            "get": {
+                "description": "Pastes can be viewed depending on visibility status of the paste",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "taxonomy"
+                ],
+                "summary": "Paste By Syntax",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "show data on page n",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "limit items per page",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "filter query",
+                        "name": "q",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Syntax name",
+                        "name": "syntax",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/handlers.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/definitions/utils.Paginator"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "rows": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "$ref": "#/definitions/model.Paste"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/tag": {
             "get": {
                 "produces": [
@@ -1140,6 +1299,14 @@
         }
     },
     "definitions": {
+        "handlers.Emailpayload": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
         "handlers.LoginResponse": {
             "type": "object",
             "properties": {
@@ -1223,11 +1390,11 @@
                 "id": {
                     "type": "string"
                 },
-                "language": {
-                    "type": "string"
-                },
                 "public": {
                     "type": "boolean"
+                },
+                "syntax": {
+                    "$ref": "#/definitions/model.Syntax"
                 },
                 "tag": {
                     "type": "array",
@@ -1236,6 +1403,14 @@
                     }
                 },
                 "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Syntax": {
+            "type": "object",
+            "properties": {
+                "name": {
                     "type": "string"
                 }
             }

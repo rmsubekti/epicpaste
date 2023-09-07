@@ -4,6 +4,7 @@ import (
 	"epicpaste/api"
 	"epicpaste/docs"
 	"epicpaste/proto"
+	"epicpaste/system/helper"
 	"net/http"
 	"os"
 	"time"
@@ -32,21 +33,14 @@ import (
 // @name Authorization
 // @description Type "Bearer" followed by a space and JWT token.
 func main() {
-	debug := os.Getenv("EPIC_DEBUG")
-	if len(debug) > 2 {
-		gin.SetMode(debug)
-	} else {
-		gin.SetMode(gin.ReleaseMode)
-	}
-
+	gin.SetMode(helper.GetEnv("EPIC_DEBUG", gin.ReleaseMode))
 	app := gin.Default()
-	PORT := os.Getenv("EPIC_PORT")
-	GRPC := os.Getenv("EPIC_GRPC")
-	HOSTNAME := os.Getenv("EPIC_HOSTNAME")
+	PORT := helper.GetEnv("EPIC_PORT", "80")
+	HOSTNAME := helper.GetEnv("EPIC_HOSTNAME", "localhost")
 
 	docs.SwaggerInfo.Host = HOSTNAME + ":" + PORT
 
-	if GRPC == "true" {
+	if os.Getenv("EPIC_GRPC") == "true" {
 		go proto.Start()
 	}
 

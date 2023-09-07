@@ -22,6 +22,6 @@ services:
     volumes:
       - ./:/epicpaste
     ports:
-      - 3030:3030
+      - 80:3030
     depends_on:
       - db

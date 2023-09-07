@@ -5,8 +5,9 @@ FROM mcr.microsoft.com/devcontainers/go:1-1.20-bullseye
 #     && apt-get -y install --no-install-recommends <your-package-list-here>
 
 # [Optional] Uncomment the next lines to use go get to install anything else you need
-# USER vscode
+USER vscode
 # RUN go get -x <your-dependency-or-tool>
+RUN go install github.com/swaggo/swag/cmd/swag@latest
 # USER root
 
 # [Optional] Uncomment this line to install global node packages.

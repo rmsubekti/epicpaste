@@ -29,10 +29,8 @@ jobs:
           # generate Docker tags based on the following events/attributes
           tags: |
             type=raw,value=latest
-            # type=sha,prefix={{branch}}-
-            # type=semver,pattern={{version}}
-            # type=semver,pattern={{major}}.{{minor}}
-            # type=semver,pattern={{major}}
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
       -
         name: Set up QEMU
         id: qemu
