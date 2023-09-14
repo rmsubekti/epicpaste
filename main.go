@@ -61,6 +61,12 @@ func main() {
 			"Message": "Status OK",
 		})
 	})
+
+	app.GET("/", func(c *gin.Context) {
+		c.Writer.WriteHeader(http.StatusOK)
+		//Convert your cached html string to byte array
+		c.Writer.Write([]byte(`<a style="font-size:2em" href="/docs/index.html">Open the documentation</a>`))
+	})
 	app.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	app.Run(":" + PORT)
